@@ -1,5 +1,6 @@
 package com.app.auth.entity;
 
+import com.app.common.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OtpCode {
+public class OtpCode extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;

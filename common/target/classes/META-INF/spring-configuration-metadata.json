@@ -1,0 +1,37 @@
+{
+  "groups": [
+    {
+      "name": "jwt",
+      "type": "com.app.common.security.JwtProperties",
+      "sourceType": "com.app.common.security.JwtProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "jwt.access-token-expiration",
+      "type": "java.lang.Long",
+      "sourceType": "com.app.common.security.JwtProperties"
+    },
+    {
+      "name": "jwt.issuer",
+      "type": "java.lang.String",
+      "sourceType": "com.app.common.security.JwtProperties"
+    },
+    {
+      "name": "jwt.refresh-token-expiration",
+      "type": "java.lang.Long",
+      "sourceType": "com.app.common.security.JwtProperties"
+    },
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "sourceType": "com.app.common.security.JwtProperties"
+    },
+    {
+      "name": "jwt.service-token-expiration",
+      "type": "java.lang.Long",
+      "sourceType": "com.app.common.security.JwtProperties"
+    }
+  ],
+  "hints": []
+}

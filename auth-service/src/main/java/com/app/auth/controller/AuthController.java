@@ -40,7 +40,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginResponse>> login(
             @Valid @RequestBody LoginRequest request) {
 
-        log.info("Login request for username: {}", request.getUsername());
+        log.info("Login request for username: {}", request.getAccount());
 
         LoginResponse response = authService.login(request);
 
