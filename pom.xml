@@ -16,6 +16,7 @@
     <modules>
         <module>build-parent</module>
         <module>common</module>
+        <module>eureka-server</module>
     </modules>
 
 </project>
