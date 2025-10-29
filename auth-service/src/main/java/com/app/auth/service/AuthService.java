@@ -4,9 +4,7 @@ import com.app.auth.dto.LoginRequest;
 import com.app.auth.dto.LoginResponse;
 import com.app.auth.dto.RegisterRequest;
 import com.app.auth.dto.RegisterResponse;
-import org.springframework.stereotype.Service;
 
-@Service
 public interface AuthService {
 
     RegisterResponse register(RegisterRequest registerRequest);

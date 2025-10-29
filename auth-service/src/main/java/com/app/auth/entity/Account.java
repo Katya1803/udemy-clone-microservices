@@ -49,11 +49,11 @@ public class Account extends BaseEntity {
     private java.util.Set<AuthIdentity> providers = new java.util.HashSet<>();
 
 
-    boolean isActive() {
+    public boolean isActive() {
         return status == AccountStatus.ACTIVE;
     }
 
-    boolean isPendingVerification() {
+    public boolean isPendingVerification() {
         return status == AccountStatus.PENDING_VERIFICATION;
     }
 

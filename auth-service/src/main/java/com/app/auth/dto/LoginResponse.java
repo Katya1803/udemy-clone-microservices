@@ -36,6 +36,6 @@ public class LoginResponse {
         private String id;
         private String username;
         private String email;
-        private String[] roles;
+        private String roles;
     }
 }

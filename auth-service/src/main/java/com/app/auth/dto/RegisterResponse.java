@@ -15,8 +15,6 @@ public class RegisterResponse {
     private String id;
     private String username;
     private String email;
-    private String firstName;
-    private String lastName;
 
     @Builder.Default
     private boolean needsVerification = true;
