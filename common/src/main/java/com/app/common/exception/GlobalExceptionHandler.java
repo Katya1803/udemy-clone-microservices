@@ -1,8 +1,8 @@
 package com.app.common.exception;
 
 import com.app.common.constant.ErrorCode;
-import com.app.common.dto.ApiResponse;
-import com.app.common.dto.ErrorResponse;
+import com.app.common.dto.response.ApiResponse;
+import com.app.common.dto.response.ErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

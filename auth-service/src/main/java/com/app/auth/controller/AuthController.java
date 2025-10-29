@@ -5,7 +5,7 @@ import com.app.auth.dto.LoginResponse;
 import com.app.auth.dto.RegisterRequest;
 import com.app.auth.dto.RegisterResponse;
 import com.app.auth.service.AuthService;
-import com.app.common.dto.ApiResponse;
+import com.app.common.dto.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
