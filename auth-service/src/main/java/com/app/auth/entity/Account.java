@@ -57,7 +57,7 @@ public class Account extends BaseEntity {
         return status == AccountStatus.PENDING_VERIFICATION;
     }
 
-    public void active() {
+    public void activate() {
         this.status = AccountStatus.ACTIVE;
         this.emailVerified = true;
     }

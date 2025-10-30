@@ -4,5 +4,6 @@ public final class RedisConstants {
 
     public static final String OTP_REDIS_PREFIX = "otp:";
     public static final String OTP_RATE_LIMIT_KEY = "otp:ratelimit:";
+    public static final String REDIS_BLACKLIST_PREFIX = "blacklist:";
 
 }

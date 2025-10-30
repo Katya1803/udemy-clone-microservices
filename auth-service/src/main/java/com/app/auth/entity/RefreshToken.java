@@ -25,7 +25,7 @@ public class RefreshToken {
     private String id;
 
     @Indexed
-    private String userId;
+    private String accountId;
 
     private String deviceId;
 
