@@ -1,13 +1,18 @@
 package com.app.auth.service.impl;
 
 import com.app.auth.client.email.EmailServiceClient;
+import com.app.auth.client.user.UserServiceClient;
 import com.app.auth.constant.AccountStatus;
+import com.app.auth.constant.Provider;
 import com.app.auth.constant.Role;
 import com.app.auth.dto.*;
 import com.app.auth.entity.Account;
+import com.app.auth.entity.AuthIdentity;
 import com.app.auth.repository.AccountRepository;
+import com.app.auth.repository.AuthIdentityRepository;
 import com.app.auth.service.*;
 import com.app.common.constant.ErrorCode;
+import com.app.common.dto.common.CreateUserRequest;
 import com.app.common.dto.common.EmailRequest;
 import com.app.common.exception.InvalidTokenException;
 import com.app.common.exception.UnauthorizedException;
@@ -32,6 +37,8 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenGenerator jwtTokenGenerator;
     private final RefreshTokenService refreshTokenService;
     private final TokenBlacklistService tokenBlacklistService;
+    private final AuthIdentityRepository authIdentityRepository;
+    private final UserServiceClient userServiceClient;
 
     @Override
     @Transactional
@@ -101,6 +108,15 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtTokenGenerator.generateAccessToken(account);
         String refreshToken = refreshTokenService.createRefreshToken(account, loginRequest.getDeviceId());
 
+        AuthIdentity authIdentity = AuthIdentity.builder()
+                .account(account)
+                .provider(Provider.APP)
+                .providerEmail(account.getEmail())
+                .providerId(account.getUsername())
+                .build();
+
+        authIdentityRepository.save(authIdentity);
+
         log.info("Login successful for user: {}", loginRequest.getAccount());
 
         return LoginResponse.builder()
@@ -140,6 +156,18 @@ public class AuthServiceImpl implements AuthService {
         accountRepository.save(account);
         log.info("User activated successfully: {}", account.getUsername());
 
+        try {
+            CreateUserRequest createUserRequest = CreateUserRequest.builder()
+                    .accountId(account.getId())
+                    .username(account.getUsername())
+                    .email(account.getEmail())
+                    .build();
+
+            userServiceClient.createUser(createUserRequest);
+            log.info("User created in user-service: {}", account.getId());
+        } catch (Exception e) {
+            log.error("Failed to create user in user-service: {}", e.getMessage(), e);
+        }
 
         String accessToken = jwtTokenGenerator.generateAccessToken(account);
         String refreshToken = refreshTokenService.createRefreshToken(
