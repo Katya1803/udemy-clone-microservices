@@ -19,6 +19,7 @@
         <module>eureka-server</module>
         <module>auth-service</module>
         <module>email-service</module>
+        <module>api-gateway</module>
     </modules>
 
 </project>

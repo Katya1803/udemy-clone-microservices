@@ -60,7 +60,7 @@ public class AuthServiceImpl implements AuthService {
         String otp = otpService.generateOtp(account.getEmail());
 
         try {
-            sendOtpEmail(account.getEmail(), account.getPassword(), otp);
+            sendOtpEmail(account.getEmail(), account.getUsername(), otp);
             log.info("OTP sent to email: {}", account.getEmail());
         } catch (Exception e) {
             log.error("Failed to send OTP to email: {}", account.getEmail(), e);

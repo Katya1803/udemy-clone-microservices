@@ -26,7 +26,7 @@ public class OAuth2ClientServiceImpl implements OAuth2ClientService {
     @Override
     public OAuth2TokenResponse generateServiceToken(OAuth2TokenRequest request) {
 
-        if(!SecurityConstants.CLIENT_CREDENTIALS.equals(request.getClientId())) {
+        if(!SecurityConstants.CLIENT_CREDENTIALS.equals(request.getGrantType())) {
             throw new UnauthorizedException("Invalid grant type. Only 'client_credentials' is supported");
         }
 
