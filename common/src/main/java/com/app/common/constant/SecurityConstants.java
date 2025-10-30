@@ -14,6 +14,8 @@ public final class SecurityConstants {
     public static final String HEADER_USER_ROLES = "X-User-Roles";
     public static final String HEADER_USER_ID = "X-User-Id";
     public static final String TOKEN_ENDPOINT = "/oauth/token";
+    public static String ROLE_SERVICE = "ROLE_SERVICE";
+    public static String CLIENT_CREDENTIALS = "client_credentials";
 
     // Token types
     public static final String TOKEN_TYPE_USER = "USER_TOKEN";
@@ -26,5 +28,5 @@ public final class SecurityConstants {
     public static Long REFRESH_TOKEN_EXP = 604800000L;
     public static Long SERVICE_TOKEN_EXP = 300000L;
 
-    public static String ROLE_SERVICE = "ROLE_SERVICE";
+
 }
