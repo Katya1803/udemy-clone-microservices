@@ -4,6 +4,7 @@ com\app\common\feign\OAuth2FeignRequestInterceptor.class
 com\app\common\dto\auth\OAuth2ClientProperties.class
 com\app\common\dto\response\ErrorResponse$ErrorDetail$ErrorDetailBuilder.class
 META-INF\spring-configuration-metadata.json
+com\app\common\dto\common\CreateUserRequest$CreateUserRequestBuilder.class
 com\app\common\dto\response\ErrorResponse.class
 com\app\common\util\CurrentAccount.class
 com\app\common\dto\auth\CachedToken.class
@@ -14,6 +15,7 @@ com\app\common\exception\InvalidTokenException.class
 com\app\common\dto\response\ApiResponse.class
 com\app\common\client\IBaseOAuth2TokenProvider.class
 com\app\common\constant\ErrorCode.class
+com\app\common\dto\common\CreateUserRequest.class
 com\app\common\dto\common\EmailResponse.class
 com\app\common\dto\auth\OAuth2TokenResponse.class
 com\app\common\constant\RedisConstants.class
@@ -22,7 +24,9 @@ com\app\common\dto\common\EmailRequest.class
 com\app\common\security\JwtTokenValidator.class
 com\app\common\dto\response\ApiResponse$ApiResponseBuilder.class
 com\app\common\exception\ResourceNotFoundException.class
+com\app\common\dto\common\UserResponse.class
 com\app\common\dto\response\PageResponse.class
+com\app\common\dto\common\UserResponse$UserResponseBuilder.class
 com\app\common\client\BaseOAuth2TokenProvider.class
 com\app\common\dto\auth\OAuth2TokenResponse$OAuth2TokenResponseBuilder.class
 com\app\common\security\JwtAuthenticationFilter.class

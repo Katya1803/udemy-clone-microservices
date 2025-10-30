@@ -28,6 +28,15 @@ public class GatewayConfig {
                         .uri("lb://auth-service")
                 )
 
+                .route("user-service", r -> r
+                        .path("/api/users/**")
+                        .filters(f -> f
+                                .stripPrefix(1)
+                                .retry(config -> config.setRetries(2))
+                        )
+                        .uri("lb://user-service")
+                )
+
                 // Example service
                 .route("test-service", r -> r
                         .path("/api/test/**")

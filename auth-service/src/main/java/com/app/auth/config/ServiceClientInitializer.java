@@ -28,7 +28,7 @@ public class ServiceClientInitializer {
                 ServiceClient authServiceClient = ServiceClient.builder()
                         .clientId("auth-service")
                         .clientSecret(passwordEncoder.encode("auth-service-secret"))
-                        .allowedScopes("email:send")
+                        .allowedScopes("email:send,user:create")
                         .enabled(true)
                         .build();
 

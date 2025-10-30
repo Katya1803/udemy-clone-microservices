@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -21,6 +22,7 @@ public class EmailController {
     private final EmailService emailService;
 
     @PostMapping("/send")
+    @PreAuthorize("hasRole('SERVICE')")
     public ResponseEntity<ApiResponse<EmailResponse>> sendEmail(
             @Valid @RequestBody EmailRequest request) {
 

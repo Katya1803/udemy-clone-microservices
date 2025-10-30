@@ -59,7 +59,7 @@ oauth2:
     token-endpoint: /oauth/token
     client-id: auth-service
     client-secret: auth-service-secret
-    scope: email:send
+    scope: email:send,user:create
 
 # Logging
 logging:
