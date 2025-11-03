@@ -1,0 +1,44 @@
+# === Java & Build ===
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+# === Maven Wrapper ===
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+
+# === IDE ===
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# === OS junk ===
+.DS_Store
+Thumbs.db
+
+# === Application Config ===
+# Ignore all application.yml/yaml files
+**/application.yml
+**/application.yaml
+**/application-dev.yml
+**/application-prod.yml
+**/application-*.yaml
+**/application-*.yml
+
+# === Environment secrets ===
+.env
+**/*.secret
+**/*.key
+**/*.pem
+**/secrets/
+**/credentials/
+
+# === Logs and temp ===
+logs/
+tmp/
