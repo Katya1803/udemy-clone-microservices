@@ -64,6 +64,15 @@ public class AuthServiceImpl implements AuthService {
 
         account = accountRepository.save(account);
 
+        AuthIdentity authIdentity = AuthIdentity.builder()
+                .account(account)
+                .provider(Provider.APP)
+                .providerEmail(account.getEmail())
+                .providerId(account.getUsername())
+                .build();
+
+        authIdentityRepository.save(authIdentity);
+
         String otp = otpService.generateOtp(account.getEmail());
 
         try {
@@ -108,14 +117,6 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtTokenGenerator.generateAccessToken(account);
         String refreshToken = refreshTokenService.createRefreshToken(account, loginRequest.getDeviceId());
 
-        AuthIdentity authIdentity = AuthIdentity.builder()
-                .account(account)
-                .provider(Provider.APP)
-                .providerEmail(account.getEmail())
-                .providerId(account.getUsername())
-                .build();
-
-        authIdentityRepository.save(authIdentity);
 
         log.info("Login successful for user: {}", loginRequest.getAccount());
 
