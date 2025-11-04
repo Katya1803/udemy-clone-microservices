@@ -82,7 +82,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public void revokeAllUserTokens(String accountId) {
-        List<RefreshToken> tokens = refreshTokenRepository.findByUserId(accountId);
+        List<RefreshToken> tokens = refreshTokenRepository.findByAccountId(accountId);
         tokens.forEach(token -> refreshTokenRepository.deleteById(token.getId()));
         log.info("Revoked all refresh tokens for user: {}, count: {}", accountId, tokens.size());
     }

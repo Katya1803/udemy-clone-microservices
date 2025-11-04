@@ -12,7 +12,7 @@ public interface RefreshTokenRepository extends CrudRepository<RefreshToken, Str
 
     Optional<RefreshToken> findById(String tokenHash);
 
-    List<RefreshToken> findByUserId(String userId);
+    List<RefreshToken> findByAccountId(String accountId);
 
-    void deleteByUserId(String userId);
+    void deleteByAccountId(String userId);
 }

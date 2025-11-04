@@ -220,22 +220,22 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public LoginResponse refresh(RefreshTokenRequest request) {
+    public LoginResponse refresh(String request) {
         log.debug("Token refresh attempt");
 
-        String userId = refreshTokenService.verifyRefreshToken(request.getRefreshToken());
+        String userId = refreshTokenService.verifyRefreshToken(request);
 
         Account account = accountRepository.findById(userId)
                 .orElseThrow(() -> new InvalidTokenException("User not found"));
 
         if (!account.isActive()) {
-            refreshTokenService.revokeRefreshToken(request.getRefreshToken());
+            refreshTokenService.revokeRefreshToken(request);
             throw new UnauthorizedException("User account is not active");
         }
 
         String newAccessToken = jwtTokenGenerator.generateAccessToken(account);
 
-        refreshTokenService.revokeRefreshToken(request.getRefreshToken());
+        refreshTokenService.revokeRefreshToken(request);
         String newRefreshToken = refreshTokenService.createRefreshToken(account, null);
 
         log.info("Token refresh successful for user: {}", account.getUsername());

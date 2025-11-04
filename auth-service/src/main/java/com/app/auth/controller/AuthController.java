@@ -4,11 +4,14 @@ import com.app.auth.dto.*;
 import com.app.auth.service.AuthService;
 import com.app.common.constant.SecurityConstants;
 import com.app.common.dto.response.ApiResponse;
+import com.app.common.exception.UnauthorizedException;
 import com.app.common.util.CurrentAccount;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,14 +39,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginResponse>> login(
             @Valid @RequestBody LoginRequest request) {
 
-        log.info("Login request for username: {}", request.getAccount());
-
         LoginResponse response = authService.login(request);
 
-        return ResponseEntity.ok(
-                ApiResponse.success(response, "Login successful")
-        );
+        return getApiResponseResponseEntity(response);
     }
+
 
     @PostMapping("/verify-otp")
     public ResponseEntity<ApiResponse<LoginResponse>> verifyOtp(
@@ -72,17 +72,18 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<LoginResponse>> refresh(
-            @Valid @RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<ApiResponse<LoginResponse>> refreshToken(
+            @CookieValue(name = "refresh", required = false) String refreshToken) {
 
-        log.debug("Token refresh request");
+        if (refreshToken == null) {
+            throw new UnauthorizedException("Missing refresh token");
+        }
 
-        LoginResponse response = authService.refresh(request);
+        LoginResponse response = authService.refresh(refreshToken);
 
-        return ResponseEntity.ok(
-                ApiResponse.success(response, "Token refreshed successfully")
-        );
+        return getApiResponseResponseEntity(response);
     }
+
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(
@@ -98,5 +99,27 @@ public class AuthController {
         return ResponseEntity.ok(
                 ApiResponse.success("Logout successful")
         );
+    }
+
+    private ResponseEntity<ApiResponse<LoginResponse>> getApiResponseResponseEntity(LoginResponse response) {
+        ResponseCookie refreshCookie = ResponseCookie.from("refresh", response.getRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Lax")
+                .path("/auth")
+                .maxAge(SecurityConstants.REFRESH_TOKEN_EXP)
+                .build();
+
+        LoginResponse body = new LoginResponse(
+                response.getAccessToken(),
+                null,
+                response.getTokenType(),
+                response.getExpiresIn(),
+                response.getUser()
+        );
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(ApiResponse.success(body));
     }
 }

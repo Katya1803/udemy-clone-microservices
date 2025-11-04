@@ -12,7 +12,7 @@ public interface AuthService {
 
     void resendOtp(ResendOtpRequest request);
 
-    LoginResponse refresh(RefreshTokenRequest request);
+    LoginResponse refresh(String request);
 
     void logout(String accessToken, String accountId);
 

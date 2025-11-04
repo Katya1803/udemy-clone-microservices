@@ -73,15 +73,14 @@ public class JwtTokenValidator {
 
     public List<String> getRoles(String token) {
         Claims claims = getClaims(token);
-        List<String> roles = claims.get("roles", List.class);
+        String role = claims.get("roles", String.class);
 
-        // FIX: Return default role for service tokens
-        if (roles == null || roles.isEmpty()) {
-            log.warn("⚠️ No roles in token, using default ROLE_SERVICE");
+        if (role == null) {
+            log.warn("⚠️ No role in token, using default ROLE_SERVICE");
             return List.of("ROLE_SERVICE");
         }
 
-        return roles;
+        return List.of(role);
     }
 
     /**
