@@ -11,6 +11,7 @@ import com.app.auth.entity.AuthIdentity;
 import com.app.auth.repository.AccountRepository;
 import com.app.auth.repository.AuthIdentityRepository;
 import com.app.auth.service.*;
+import com.app.auth.service.event.AccountEventPublisher;
 import com.app.common.constant.ErrorCode;
 import com.app.common.dto.common.CreateUserRequest;
 import com.app.common.dto.common.EmailRequest;
@@ -40,6 +41,7 @@ public class AuthServiceImpl implements AuthService {
     private final TokenBlacklistService tokenBlacklistService;
     private final AuthIdentityRepository authIdentityRepository;
     private final UserServiceClient userServiceClient;
+    private final AccountEventPublisher accountEventPublisher;
 
     @Override
     @Transactional
@@ -168,6 +170,12 @@ public class AuthServiceImpl implements AuthService {
             log.info("User created in user-service: {}", account.getId());
         } catch (Exception e) {
             log.error("Failed to create user in user-service: {}", e.getMessage(), e);
+        }
+
+        try {
+            accountEventPublisher.publishAccountVerifiedEvent(account);
+        } catch (Exception e) {
+            log.error("Failed to publish account verification event: {}", e.getMessage(), e);
         }
 
         java.lang.String accessToken = jwtTokenGenerator.generateAccessToken(account);
