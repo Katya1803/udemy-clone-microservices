@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.List;
 
 
 @Slf4j
@@ -82,9 +81,9 @@ public class GatewayTokenValidator {
      * Extract roles from token
      */
     @SuppressWarnings("unchecked")
-    public List<String> getRoles(String token) {
+    public String getRole(String token) {
         Claims claims = getClaims(token);
-        return claims.get("roles", List.class);
+        return claims.get("roles", String.class);
     }
 
     /**

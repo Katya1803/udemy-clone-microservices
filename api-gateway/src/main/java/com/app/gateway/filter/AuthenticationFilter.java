@@ -64,7 +64,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                         }
 
                         String userId = jwtTokenValidator.getUserId(token);
-                        List<String> roles = jwtTokenValidator.getRoles(token);
+                        String roles = jwtTokenValidator.getRole(token);
                         String email = jwtTokenValidator.getEmail(token);
 
                         log.debug("Authenticated user: {} with roles: {}", userId, roles);
