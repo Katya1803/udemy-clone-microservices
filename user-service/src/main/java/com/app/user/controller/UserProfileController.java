@@ -38,11 +38,11 @@ public class UserProfileController {
      */
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserProfileResponse>> getMyProfile(
-            @CurrentAccount String userId) {
+            @CurrentAccount String accountId) {
 
-        log.debug("Fetching current user profile: {}", userId);
+        log.debug("Fetching current user profile: {}", accountId);
 
-        UserProfileResponse response = profileService.getProfile(userId);
+        UserProfileResponse response = profileService.getProfile(accountId);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }

@@ -53,9 +53,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponse getUserById(String id) {
+    public UserResponse getUserByAccountId(String id) {
         log.debug("Fetching user by ID: {}", id);
-        User user = userRepository.findById(id)
+        User user = userRepository.findByAccountId(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
         return mapToResponse(user);
     }

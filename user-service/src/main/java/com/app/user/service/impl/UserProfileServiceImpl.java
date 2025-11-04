@@ -3,13 +3,17 @@ package com.app.user.service.impl;
 import com.app.common.exception.ResourceNotFoundException;
 import com.app.user.dto.UpdateUserProfileRequest;
 import com.app.user.dto.UserProfileResponse;
+import com.app.user.entity.User;
 import com.app.user.entity.UserProfile;
 import com.app.user.repository.UserProfileRepository;
+import com.app.user.repository.UserRepository;
 import com.app.user.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -17,14 +21,23 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserProfileServiceImpl implements UserProfileService {
 
     private final UserProfileRepository profileRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional(readOnly = true)
-    public UserProfileResponse getProfile(String userId) {
-        log.debug("Fetching profile for user: {}", userId);
+    public UserProfileResponse getProfile(String accountId) {
+        log.debug("Fetching profile for user: {}", accountId);
+
+        String userId = null;
+
+        Optional<User> user = userRepository.findByAccountId(accountId);
+
+        if (user.isPresent()) {
+            userId = user.get().getId();
+        }
 
         UserProfile profile = profileRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("UserProfile", "userId", userId));
+                .orElseThrow(() -> new ResourceNotFoundException("UserProfile", "accountId", accountId));
 
         return mapToResponse(profile);
     }

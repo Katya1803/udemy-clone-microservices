@@ -49,11 +49,11 @@ public class UserController {
      */
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(
-            @CurrentAccount String userId) {
+            @CurrentAccount String accountId) {
 
-        log.debug("Fetching current user: {}", userId);
+        log.debug("Fetching current user: {}", accountId);
 
-        UserResponse response = userService.getUserById(userId);
+        UserResponse response = userService.getUserByAccountId(accountId);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -66,7 +66,7 @@ public class UserController {
 
         log.debug("Fetching user by ID: {}", id);
 
-        UserResponse response = userService.getUserById(id);
+        UserResponse response = userService.getUserByAccountId(id);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
