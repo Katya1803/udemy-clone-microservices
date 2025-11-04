@@ -5,10 +5,9 @@ import com.app.auth.service.JwtTokenGenerator;
 import com.app.common.constant.SecurityConstants;
 import com.app.common.security.JwtProperties;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -28,9 +27,12 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
         Instant now = Instant.now();
         Instant expiration = now.plusMillis(jwtProperties.getAccessTokenExpiration());
 
+        // ✅ FIXED: Convert Set<Role> to comma-separated string with ROLE_ prefix
+        String rolesString = account.getRolesAsString(); // "ROLE_USER,ROLE_ADMIN"
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("token_type", SecurityConstants.TOKEN_TYPE_USER);
-        claims.put("roles", account.getRoles());
+        claims.put("roles", rolesString); // ✅ Store as STRING
         claims.put("email", account.getEmail());
         claims.put("username", account.getUsername());
 
@@ -44,8 +46,8 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
                 .signWith(getSigningKey())
                 .compact();
 
-        log.debug("Generated access token for user: {}, expires at: {}",
-                account.getUsername(), expiration);
+        log.debug("Generated access token for user: {}, roles: {}, expires at: {}",
+                account.getUsername(), rolesString, expiration);
 
         return token;
     }
@@ -59,7 +61,8 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
         claims.put("token_type", SecurityConstants.TOKEN_TYPE_SERVICE);
         claims.put("client_id", clientId);
         claims.put("scope", scope);
-        claims.put("roles", List.of(SecurityConstants.ROLE_SERVICE));
+        // ✅ FIXED: Service tokens have ROLE_SERVICE
+        claims.put("roles", SecurityConstants.ROLE_SERVICE); // Single role as String
 
         String token = Jwts.builder()
                 .subject(clientId)
@@ -88,10 +91,8 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
         return jwtProperties.getServiceTokenExpiration() / 1000;
     }
 
-    public SecretKey getSigningKey() {
+    private SecretKey getSigningKey() {
         byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
-
 }

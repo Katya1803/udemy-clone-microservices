@@ -10,8 +10,10 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -20,9 +22,6 @@ public class JwtTokenValidator {
 
     private final JwtProperties jwtProperties;
 
-    /**
-     * Validate JWT token
-     */
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
@@ -48,9 +47,6 @@ public class JwtTokenValidator {
         }
     }
 
-    /**
-     * Extract all claims from token
-     */
     public Claims getClaims(String token) {
         try {
             return Jwts.parser()
@@ -64,56 +60,49 @@ public class JwtTokenValidator {
         }
     }
 
-    /**
-     * Extract user ID from token
-     */
     public String getUserId(String token) {
         return getClaims(token).getSubject();
     }
 
+    // ✅ FIXED: Return List<String> by parsing comma-separated string
     public List<String> getRoles(String token) {
         Claims claims = getClaims(token);
-        String role = claims.get("roles", String.class);
+        String rolesString = claims.get("roles", String.class);
 
-        if (role == null) {
-            log.warn("⚠️ No role in token, using default ROLE_SERVICE");
+        if (rolesString == null || rolesString.isBlank()) {
+            log.warn("⚠️ No roles in token, using default ROLE_SERVICE");
             return List.of("ROLE_SERVICE");
         }
 
-        return List.of(role);
+        // Parse "ROLE_USER,ROLE_ADMIN" → ["ROLE_USER", "ROLE_ADMIN"]
+        return Arrays.stream(rolesString.split(","))
+                .map(String::trim)
+                .filter(role -> !role.isEmpty())
+                .collect(Collectors.toList());
     }
 
-    /**
-     * Extract token type (USER_TOKEN or SERVICE_TOKEN)
-     */
+    // ✅ NEW: Get roles as single string (for backward compatibility)
+    public String getRolesAsString(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("roles", String.class);
+    }
+
     public String getTokenType(String token) {
         return getClaims(token).get("token_type", String.class);
     }
 
-    /**
-     * Extract JTI (JWT ID) for blacklist checking
-     */
     public String getJti(String token) {
         return getClaims(token).getId();
     }
 
-    /**
-     * Extract email from token
-     */
     public String getEmail(String token) {
         return getClaims(token).get("email", String.class);
     }
 
-    /**
-     * Extract token expiration date
-     */
     public Date getExpirationDate(String token) {
         return getClaims(token).getExpiration();
     }
 
-    /**
-     * Check if token is expired
-     */
     public boolean isTokenExpired(String token) {
         try {
             Date expiration = getExpirationDate(token);
@@ -123,9 +112,6 @@ public class JwtTokenValidator {
         }
     }
 
-    /**
-     * Get remaining time until token expires (in seconds)
-     */
     public long getRemainingTime(String token) {
         Date expiration = getExpirationDate(token);
         long now = System.currentTimeMillis();
@@ -133,23 +119,14 @@ public class JwtTokenValidator {
         return Math.max(0, (expirationTime - now) / 1000);
     }
 
-    /**
-     * Extract client ID (for service tokens)
-     */
     public String getClientId(String token) {
         return getClaims(token).get("client_id", String.class);
     }
 
-    /**
-     * Extract scope (for service tokens)
-     */
     public String getScope(String token) {
         return getClaims(token).get("scope", String.class);
     }
 
-    /**
-     * Extract audience (for service tokens)
-     */
     public String getAudience(String token) {
         return getClaims(token).getAudience().iterator().next();
     }

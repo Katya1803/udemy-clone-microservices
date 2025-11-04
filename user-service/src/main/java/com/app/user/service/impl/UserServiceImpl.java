@@ -14,8 +14,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @Service
@@ -29,7 +31,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse createUser(CreateUserRequest request) {
         log.info("Creating user with Account ID: {}", request.getAccountId());
 
-        if (userRepository.existsById(request.getAccountId())) {
+        if (userRepository.existsByAccountId(request.getAccountId())) {
             throw new IllegalArgumentException("User already exists with Account ID: " + request.getAccountId());
         }
 
@@ -53,10 +55,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserResponse getUserByAccountId(String id) {
-        log.debug("Fetching user by ID: {}", id);
-        User user = userRepository.findByAccountId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+    public UserResponse getUserByAccountId(String accountId) {
+        log.debug("Fetching user by accountId: {}", accountId);
+        User user = userRepository.findByAccountId(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "accountId", accountId));
+        return mapToResponse(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserResponse getUserByUserId(String userId) {
+        log.debug("Fetching user by userId: {}", userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
         return mapToResponse(user);
     }
 
@@ -79,11 +90,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse updateUser(String id, UpdateUserRequest request) {
-        log.info("Updating user: {}", id);
+    public UserResponse updateUser(String userId, UpdateUserRequest request, String accountId) {
+        log.info("Updating userId: {} by accountId: {}", userId, accountId);
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
+
+        // Verify ownership
+        if (!user.getAccountId().equals(accountId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only update your own information");
+        }
 
         if (request.getEmail() != null) {
             user.setEmail(request.getEmail());
@@ -94,23 +110,23 @@ public class UserServiceImpl implements UserService {
         }
 
         user = userRepository.save(user);
-        log.info("User updated successfully: {}", id);
+        log.info("User updated successfully: {}", userId);
 
         return mapToResponse(user);
     }
 
     @Override
     @Transactional
-    public void deleteUser(String id) {
-        log.info("Deleting user: {}", id);
+    public void deleteUser(String userId) {
+        log.info("Deleting userId: {}", userId);
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
 
         user.setStatus(UserStatus.DELETED);
         userRepository.save(user);
 
-        log.info("User deleted (soft delete): {}", id);
+        log.info("User deleted (soft delete): {}", userId);
     }
 
     private UserResponse mapToResponse(User user) {
@@ -134,6 +150,7 @@ public class UserServiceImpl implements UserService {
 
         return UserResponse.builder()
                 .id(user.getId())
+                .accountId(user.getAccountId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .status(user.getStatus())

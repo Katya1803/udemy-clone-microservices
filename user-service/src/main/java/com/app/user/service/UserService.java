@@ -10,13 +10,24 @@ public interface UserService {
 
     UserResponse createUser(CreateUserRequest request);
 
-    UserResponse getUserByAccountId(String id);
+    /**
+     * Get user by accountId (from auth service)
+     */
+    UserResponse getUserByAccountId(String accountId);
+
+    /**
+     * Get user by userId (internal user-service ID)
+     */
+    UserResponse getUserByUserId(String userId);
 
     UserResponse getUserByUsername(String username);
 
     Page<UserResponse> getAllUsers(Pageable pageable);
 
-    UserResponse updateUser(String id, UpdateUserRequest request);
+    /**
+     * Update user by userId, verify ownership with accountId
+     */
+    UserResponse updateUser(String userId, UpdateUserRequest request, String accountId);
 
-    void deleteUser(String id);
+    void deleteUser(String userId);
 }

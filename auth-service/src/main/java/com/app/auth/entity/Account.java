@@ -9,6 +9,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "accounts")
@@ -31,24 +34,28 @@ public class Account extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    // ✅ CHANGED: Single enum → Set of enums
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "account_roles", joinColumns = @JoinColumn(name = "account_id"))
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role roles;
+    @Column(name = "role")
+    @Builder.Default
+    private Set<Role> roles = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     @Builder.Default
     private AccountStatus status = AccountStatus.PENDING_VERIFICATION;
 
-    @Column(name = "email_verified",nullable = false)
+    @Column(name = "email_verified", nullable = false)
     @Builder.Default
     private Boolean emailVerified = false;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
-    private java.util.Set<AuthIdentity> providers = new java.util.HashSet<>();
+    private Set<AuthIdentity> providers = new HashSet<>();
 
-
+    // ✅ Helper methods
     public boolean isActive() {
         return status == AccountStatus.ACTIVE;
     }
@@ -60,5 +67,38 @@ public class Account extends BaseEntity {
     public void activate() {
         this.status = AccountStatus.ACTIVE;
         this.emailVerified = true;
+    }
+
+    public void addRole(Role role) {
+        this.roles.add(role);
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
+    }
+
+    public boolean hasRole(Role role) {
+        return this.roles.contains(role);
+    }
+
+    // ✅ Convert roles to comma-separated string for JWT
+    public String getRolesAsString() {
+        return roles.stream()
+                .map(Role::name)
+                .map(role -> "ROLE_" + role) // Add ROLE_ prefix
+                .collect(Collectors.joining(","));
+    }
+
+    // ✅ Parse roles from string
+    public static Set<Role> parseRoles(String rolesStr) {
+        if (rolesStr == null || rolesStr.isBlank()) {
+            return Set.of(Role.USER);
+        }
+
+        return Set.of(rolesStr.split(","))
+                .stream()
+                .map(r -> r.replace("ROLE_", "").trim())
+                .map(Role::valueOf)
+                .collect(Collectors.toSet());
     }
 }

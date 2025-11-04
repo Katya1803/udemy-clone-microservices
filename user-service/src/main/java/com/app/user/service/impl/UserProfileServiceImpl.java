@@ -10,10 +10,10 @@ import com.app.user.repository.UserRepository;
 import com.app.user.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @Service
@@ -25,31 +25,46 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserProfileResponse getProfile(String accountId) {
-        log.debug("Fetching profile for user: {}", accountId);
+    public UserProfileResponse getProfileByAccountId(String accountId) {
+        log.debug("Fetching profile for accountId: {}", accountId);
 
-        String userId = null;
+        User user = userRepository.findByAccountId(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "accountId", accountId));
 
-        Optional<User> user = userRepository.findByAccountId(accountId);
+        UserProfile profile = profileRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("UserProfile", "userId", user.getId()));
 
-        if (user.isPresent()) {
-            userId = user.get().getId();
-        }
+        return mapToResponse(profile);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserProfileResponse getProfileByUserId(String userId) {
+        log.debug("Fetching profile for userId: {}", userId);
 
         UserProfile profile = profileRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("UserProfile", "accountId", accountId));
+                .orElseThrow(() -> new ResourceNotFoundException("UserProfile", "userId", userId));
 
         return mapToResponse(profile);
     }
 
     @Override
     @Transactional
-    public UserProfileResponse updateProfile(String userId, UpdateUserProfileRequest request) {
-        log.info("Updating profile for user: {}", userId);
+    public UserProfileResponse updateProfileByUserId(String userId, UpdateUserProfileRequest request, String accountId) {
+        log.info("Updating profile for userId: {} by accountId: {}", userId, accountId);
+
+        // Verify ownership: check if the accountId owns this userId
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
+
+        if (!user.getAccountId().equals(accountId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only update your own profile");
+        }
 
         UserProfile profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("UserProfile", "userId", userId));
 
+        // Update fields
         if (request.getFirstName() != null) {
             profile.setFirstName(request.getFirstName());
         }
@@ -82,7 +97,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         }
 
         profile = profileRepository.save(profile);
-        log.info("Profile updated successfully for user: {}", userId);
+        log.info("Profile updated successfully for userId: {}", userId);
 
         return mapToResponse(profile);
     }

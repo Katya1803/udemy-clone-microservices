@@ -5,7 +5,18 @@ import com.app.user.dto.UserProfileResponse;
 
 public interface UserProfileService {
 
-    UserProfileResponse getProfile(String userId);
+    /**
+     * Get profile by accountId (from auth service)
+     */
+    UserProfileResponse getProfileByAccountId(String accountId);
 
-    UserProfileResponse updateProfile(String userId, UpdateUserProfileRequest request);
+    /**
+     * Get profile by userId (internal user-service ID)
+     */
+    UserProfileResponse getProfileByUserId(String userId);
+
+    /**
+     * Update profile by userId, verify ownership with accountId
+     */
+    UserProfileResponse updateProfileByUserId(String userId, UpdateUserProfileRequest request, String accountId);
 }

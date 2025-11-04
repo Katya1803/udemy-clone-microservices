@@ -51,7 +51,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(
             @CurrentAccount String accountId) {
 
-        log.debug("Fetching current user: {}", accountId);
+        log.debug("Fetching current user by accountId: {}", accountId);
 
         UserResponse response = userService.getUserByAccountId(accountId);
 
@@ -59,14 +59,14 @@ public class UserController {
     }
 
     /**
-     * Get user by ID
+     * Get user by userId (internal ID)
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable String id) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable String userId) {
 
-        log.debug("Fetching user by ID: {}", id);
+        log.debug("Fetching user by userId: {}", userId);
 
-        UserResponse response = userService.getUserByAccountId(id);
+        UserResponse response = userService.getUserByUserId(userId);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -110,22 +110,15 @@ public class UserController {
     /**
      * Update user
      */
-    @PutMapping("/{id}")
+    @PutMapping("/{userId}")
     public ResponseEntity<ApiResponse<UserResponse>> updateUser(
-            @PathVariable String id,
+            @PathVariable String userId,
             @Valid @RequestBody UpdateUserRequest request,
-            @CurrentAccount String currentUserId) {
+            @CurrentAccount String accountId) {
 
-        log.info("Updating user: {}", id);
+        log.info("Updating user: {} by accountId: {}", userId, accountId);
 
-        // Only allow users to update their own info
-        if (!id.equals(currentUserId)) {
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body(ApiResponse.error("You can only update your own information"));
-        }
-
-        UserResponse response = userService.updateUser(id, request);
+        UserResponse response = userService.updateUser(userId, request, accountId);
 
         return ResponseEntity.ok(ApiResponse.success(response, "User updated successfully"));
     }
@@ -133,13 +126,13 @@ public class UserController {
     /**
      * Delete user (soft delete)
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable String id) {
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable String userId) {
 
-        log.info("Deleting user: {}", id);
+        log.info("Deleting user: {}", userId);
 
-        userService.deleteUser(id);
+        userService.deleteUser(userId);
 
         return ResponseEntity.ok(ApiResponse.success("User deleted successfully"));
     }

@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -57,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
                 .username(registerRequest.getUsername())
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
-                .roles(Role.USER)
+                .roles(Set.of(Role.USER))
                 .status(AccountStatus.PENDING_VERIFICATION)
                 .emailVerified(false)
                 .build();
@@ -92,10 +93,10 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    // ✅ Update LoginResponse to use getRolesAsString()
     @Override
     @Transactional
     public LoginResponse login(LoginRequest loginRequest) {
-
         Account account = accountRepository.findByUsernameOrEmail(loginRequest.getAccount())
                 .orElseThrow(() -> new UnauthorizedException(ErrorCode.INVALID_CREDENTIALS.getMessage()));
 
@@ -117,19 +118,18 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtTokenGenerator.generateAccessToken(account);
         String refreshToken = refreshTokenService.createRefreshToken(account, loginRequest.getDeviceId());
 
-
         log.info("Login successful for user: {}", loginRequest.getAccount());
 
         return LoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
-                .expiresIn(1L)
+                .expiresIn(jwtTokenGenerator.getAccessTokenExpirationSeconds())
                 .user(LoginResponse.UserInfo.builder()
                         .id(account.getId())
                         .username(account.getUsername())
                         .email(account.getEmail())
-                        .roles(account.getRoles().toString())
+                        .roles(account.getRolesAsString())
                         .build())
                 .build();
     }
@@ -170,8 +170,8 @@ public class AuthServiceImpl implements AuthService {
             log.error("Failed to create user in user-service: {}", e.getMessage(), e);
         }
 
-        String accessToken = jwtTokenGenerator.generateAccessToken(account);
-        String refreshToken = refreshTokenService.createRefreshToken(
+        java.lang.String accessToken = jwtTokenGenerator.generateAccessToken(account);
+        java.lang.String refreshToken = refreshTokenService.createRefreshToken(
                 account,
                 request.getDeviceId() != null ? request.getDeviceId() : "web"
         );
@@ -206,7 +206,7 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalStateException("Too many OTP requests. Please try again later.");
         }
 
-        String otp = otpService.generateOtp(account.getEmail());
+        java.lang.String otp = otpService.generateOtp(account.getEmail());
         otpService.incrementOtpRequest(account.getEmail());
 
         try {
@@ -220,10 +220,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public LoginResponse refresh(String request) {
+    public LoginResponse refresh(java.lang.String request) {
         log.debug("Token refresh attempt");
 
-        String userId = refreshTokenService.verifyRefreshToken(request);
+        java.lang.String userId = refreshTokenService.verifyRefreshToken(request);
 
         Account account = accountRepository.findById(userId)
                 .orElseThrow(() -> new InvalidTokenException("User not found"));
@@ -233,10 +233,10 @@ public class AuthServiceImpl implements AuthService {
             throw new UnauthorizedException("User account is not active");
         }
 
-        String newAccessToken = jwtTokenGenerator.generateAccessToken(account);
+        java.lang.String newAccessToken = jwtTokenGenerator.generateAccessToken(account);
 
         refreshTokenService.revokeRefreshToken(request);
-        String newRefreshToken = refreshTokenService.createRefreshToken(account, null);
+        java.lang.String newRefreshToken = refreshTokenService.createRefreshToken(account, null);
 
         log.info("Token refresh successful for user: {}", account.getUsername());
 
@@ -249,7 +249,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void logout(String accessToken, String accountId) {
+    public void logout(java.lang.String accessToken, java.lang.String accountId) {
         log.info("Logout for user: {}", accountId);
 
         tokenBlacklistService.blacklistToken(accessToken);
@@ -258,8 +258,8 @@ public class AuthServiceImpl implements AuthService {
         log.info("Logout successful for user: {}", accountId);
     }
 
-    private void sendOtpEmail(String email, String username, String otp) {
-        Map<String, Object> variables = new HashMap<>();
+    private void sendOtpEmail(java.lang.String email, java.lang.String username, java.lang.String otp) {
+        Map<java.lang.String, Object> variables = new HashMap<>();
         variables.put("username", username);
         variables.put("otp", otp);
 

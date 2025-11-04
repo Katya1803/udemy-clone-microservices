@@ -20,15 +20,15 @@ public class UserProfileController {
     private final UserProfileService profileService;
 
     /**
-     * Get user profile
+     * Get user profile by userId
      */
     @GetMapping
     public ResponseEntity<ApiResponse<UserProfileResponse>> getProfile(
             @PathVariable String userId) {
 
-        log.debug("Fetching profile for user: {}", userId);
+        log.debug("Fetching profile for userId: {}", userId);
 
-        UserProfileResponse response = profileService.getProfile(userId);
+        UserProfileResponse response = profileService.getProfileByUserId(userId);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -40,9 +40,9 @@ public class UserProfileController {
     public ResponseEntity<ApiResponse<UserProfileResponse>> getMyProfile(
             @CurrentAccount String accountId) {
 
-        log.debug("Fetching current user profile: {}", accountId);
+        log.debug("Fetching current user profile for accountId: {}", accountId);
 
-        UserProfileResponse response = profileService.getProfile(accountId);
+        UserProfileResponse response = profileService.getProfileByAccountId(accountId);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -54,17 +54,11 @@ public class UserProfileController {
     public ResponseEntity<ApiResponse<UserProfileResponse>> updateProfile(
             @PathVariable String userId,
             @Valid @RequestBody UpdateUserProfileRequest request,
-            @CurrentAccount String currentUserId) {
+            @CurrentAccount String accountId) {
 
-        log.info("Updating profile for user: {}", userId);
+        log.info("Updating profile for userId: {} by accountId: {}", userId, accountId);
 
-        if (!userId.equals(currentUserId)) {
-            return ResponseEntity
-                    .status(403)
-                    .body(ApiResponse.error("You can only update your own profile"));
-        }
-
-        UserProfileResponse response = profileService.updateProfile(userId, request);
+        UserProfileResponse response = profileService.updateProfileByUserId(userId, request, accountId);
 
         return ResponseEntity.ok(ApiResponse.success(response, "Profile updated successfully"));
     }

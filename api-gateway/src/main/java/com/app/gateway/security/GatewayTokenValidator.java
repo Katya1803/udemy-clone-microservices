@@ -11,7 +11,6 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-
 @Slf4j
 @Component
 public class GatewayTokenValidator {
@@ -26,9 +25,6 @@ public class GatewayTokenValidator {
         this.issuer = issuer;
     }
 
-    /**
-     * Validate JWT token
-     */
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
@@ -54,9 +50,6 @@ public class GatewayTokenValidator {
         }
     }
 
-    /**
-     * Extract all claims from token
-     */
     public Claims getClaims(String token) {
         try {
             return Jwts.parser()
@@ -70,46 +63,35 @@ public class GatewayTokenValidator {
         }
     }
 
-    /**
-     * Extract user ID from token
-     */
     public String getUserId(String token) {
         return getClaims(token).getSubject();
     }
 
-    /**
-     * Extract roles from token
-     */
-    @SuppressWarnings("unchecked")
+    // ✅ FIXED: Return comma-separated string directly
     public String getRole(String token) {
         Claims claims = getClaims(token);
-        return claims.get("roles", String.class);
+        String roles = claims.get("roles", String.class);
+
+        if (roles == null || roles.isBlank()) {
+            log.warn("⚠️ No roles in token");
+            return "ROLE_SERVICE"; // Default for service tokens
+        }
+
+        return roles; // Return "ROLE_USER,ROLE_ADMIN"
     }
 
-    /**
-     * Extract token type (USER_TOKEN or SERVICE_TOKEN)
-     */
     public String getTokenType(String token) {
         return getClaims(token).get("token_type", String.class);
     }
 
-    /**
-     * Extract JTI (JWT ID) for blacklist checking
-     */
     public String getJti(String token) {
         return getClaims(token).getId();
     }
 
-    /**
-     * Extract email from token
-     */
     public String getEmail(String token) {
         return getClaims(token).get("email", String.class);
     }
 
-    /**
-     * Check if token is expired
-     */
     public boolean isTokenExpired(String token) {
         try {
             Date expiration = getClaims(token).getExpiration();
@@ -119,17 +101,11 @@ public class GatewayTokenValidator {
         }
     }
 
-    /**
-     * Get signing key from secret
-     */
     private SecretKey getSigningKey() {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    /**
-     * Custom exception for invalid tokens
-     */
     public static class InvalidTokenException extends RuntimeException {
         public InvalidTokenException(String message) {
             super(message);
