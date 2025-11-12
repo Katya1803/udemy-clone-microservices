@@ -1,36 +1,27 @@
-# Build stage
+# ---------- BUILD STAGE ----------
 FROM maven:3.9.5-eclipse-temurin-17-alpine AS build
 WORKDIR /app
 
-# Copy parent pom and build-parent
-COPY pom.xml .
-COPY build-parent ./build-parent
-COPY common ./common
+# Copy toàn bộ mã nguồn để Maven thấy tất cả modules
+COPY . .
 
-# Copy auth-service source
-COPY auth-service/pom.xml ./auth-service/
-COPY auth-service/src ./auth-service/src
+# Build module tương ứng
+RUN mvn -f pom.xml clean package -pl auth-service -am -DskipTests
 
-# Build the application
-RUN mvn clean package -pl auth-service -am -DskipTests
-
-# Run stage
+# ---------- RUNTIME STAGE ----------
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-# Create non-root user
+# Tạo user non-root
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
-# Copy jar from build stage
+# Copy jar ra từ stage build
 COPY --from=build /app/auth-service/target/*.jar app.jar
 
-# Expose port
-EXPOSE 8081
+EXPOSE 8080
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:8081/actuator/health || exit 1
 
-# Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
