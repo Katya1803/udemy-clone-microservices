@@ -23,13 +23,16 @@ mvnw.cmd
 Thumbs.db
 
 # === Application Config ===
-# Ignore all application.yml/yaml files
-**/application.yml
-**/application.yaml
+# Ignore only local/dev configs that may contain secrets
+**/application-local.yml
+**/application-local.yaml
 **/application-dev.yml
-**/application-prod.yml
-**/application-*.yaml
-**/application-*.yml
+**/application-dev.yaml
+
+# Do NOT ignore the shared and prod templates
+!**/application.yml
+!**/application-prod.yml
+!**/application-prod.yaml
 
 # === Environment secrets ===
 .env

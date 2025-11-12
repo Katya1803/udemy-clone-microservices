@@ -1,5 +1,6 @@
 package com.app.auth.service.impl;
 
+import com.app.auth.client.user.UserServiceClient;
 import com.app.auth.entity.Account;
 import com.app.auth.service.JwtTokenGenerator;
 import com.app.common.constant.SecurityConstants;
@@ -27,12 +28,11 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
         Instant now = Instant.now();
         Instant expiration = now.plusMillis(jwtProperties.getAccessTokenExpiration());
 
-        // ✅ FIXED: Convert Set<Role> to comma-separated string with ROLE_ prefix
-        String rolesString = account.getRolesAsString(); // "ROLE_USER,ROLE_ADMIN"
+        String rolesString = account.getRolesAsString();
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("token_type", SecurityConstants.TOKEN_TYPE_USER);
-        claims.put("roles", rolesString); // ✅ Store as STRING
+        claims.put("roles", rolesString);
         claims.put("email", account.getEmail());
         claims.put("username", account.getUsername());
 

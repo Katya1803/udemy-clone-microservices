@@ -1,6 +1,8 @@
 package com.app.auth.service.impl;
 
 import com.app.auth.client.email.EmailServiceClient;
+import com.app.auth.client.email.ResilientEmailServiceClient;
+import com.app.auth.client.user.ResilientUserServiceClient;
 import com.app.auth.client.user.UserServiceClient;
 import com.app.auth.constant.AccountStatus;
 import com.app.auth.constant.Provider;
@@ -35,12 +37,12 @@ public class AuthServiceImpl implements AuthService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final OtpService otpService;
-    private final EmailServiceClient emailServiceClient;
+    private final ResilientEmailServiceClient emailServiceClient;
     private final JwtTokenGenerator jwtTokenGenerator;
     private final RefreshTokenService refreshTokenService;
     private final TokenBlacklistService tokenBlacklistService;
     private final AuthIdentityRepository authIdentityRepository;
-    private final UserServiceClient userServiceClient;
+    private final ResilientUserServiceClient userServiceClient;
     private final AccountEventPublisher accountEventPublisher;
 
     @Override
