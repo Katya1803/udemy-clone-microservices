@@ -1,0 +1,75 @@
+server:
+  port: ${SERVER_PORT:8083}
+
+spring:
+  application:
+    name: email-service
+  profiles:
+    active: local
+
+  # Mail Configuration
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+  # Kafka config
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: email-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      properties:
+        spring.json.trusted.packages: com.example.common.event
+
+  # Thymeleaf Configuration
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: ${THYMELEAF_CACHE:false}
+
+# Eureka Client
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+
+# JWT Configuration (for service-to-service auth)
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
+  refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+  service-token-expiration: ${JWT_SERVICE_EXPIRATION:300000}
+  issuer: ${JWT_ISSUER:auth-service}
+
+# Email Configuration
+email:
+  from:
+    address: ${EMAIL_FROM_ADDRESS}
+    name: ${EMAIL_FROM_NAME:NullPointer}
+
+# Logging
+logging:
+  level:
+    com.example.email: ${LOG_LEVEL_EMAIL:DEBUG}
+    com.example.common: ${LOG_LEVEL_COMMON:DEBUG}
+    org.springframework.mail: ${LOG_LEVEL_MAIL:DEBUG}

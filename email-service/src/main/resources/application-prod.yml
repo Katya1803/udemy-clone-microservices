@@ -1,0 +1,36 @@
+server:
+  port: 8083
+
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+  kafka:
+    bootstrap-servers: kafka:9092
+  thymeleaf:
+    cache: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: 900000
+  refresh-token-expiration: 604800000
+  service-token-expiration: 300000
+  issuer: auth-service
+
+email:
+  from:
+    address: ${EMAIL_FROM_ADDRESS}
+    name: NullPointer
+
+logging:
+  level:
+    com.example.email: INFO
+    com.example.common: INFO
+    org.springframework.mail: WARN

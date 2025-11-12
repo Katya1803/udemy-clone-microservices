@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  data:
+    redis:
+      host: redis
+      port: 6379
+      password: ${REDIS_PASSWORD}
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins:
+              - "${CORS_ALLOWED_ORIGIN}"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+
+jwt:
+  secret: ${JWT_SECRET}
+  issuer: microservices-security
+  access-token-expiration: 900000
+  refresh-token-expiration: 2592000000
+  service-token-expiration: 300000
+
+rate-limit:
+  default-limit: 100
+  default-duration: 60
+  auth-login-limit: 5
+  auth-login-duration: 900
+
+logging:
+  level:
+    root: INFO
+    com.example.gateway: INFO
+    org.springframework.cloud.gateway: INFO
+    org.springframework.web.reactive: WARN

@@ -1,0 +1,78 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: api-gateway
+  profiles:
+    active: local
+
+  # Redis Configuration (Reactive)
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+
+  # Cloud Gateway Configuration
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins:
+              - "${CORS_ALLOWED_ORIGIN:http://localhost:3000}"
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowed-headers: "*"
+            allow-credentials: true
+            max-age: 3600
+
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: true
+
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET}
+  issuer: ${JWT_ISSUER:microservices-security}
+  access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
+  refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:2592000000}
+  service-token-expiration: ${JWT_SERVICE_EXPIRATION:300000}
+
+# Rate Limiting Configuration
+rate-limit:
+  default-limit: ${RATE_LIMIT_DEFAULT:100}
+  default-duration: ${RATE_LIMIT_DURATION:60}
+  auth-login-limit: ${RATE_LIMIT_LOGIN:5}
+  auth-login-duration: ${RATE_LIMIT_LOGIN_DURATION:900}
+
+# Logging
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}
+    com.example.gateway: ${LOG_LEVEL_GATEWAY:DEBUG}
+    org.springframework.cloud.gateway: ${LOG_LEVEL_GATEWAY_CLOUD:DEBUG}
+    org.springframework.web.reactive: ${LOG_LEVEL_REACTIVE:DEBUG}
