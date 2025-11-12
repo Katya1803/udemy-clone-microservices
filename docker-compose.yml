@@ -6,8 +6,8 @@ services:
     image: postgres:15-alpine
     container_name: postgres
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: postgres
     ports:
       - "5432:5432"
@@ -17,7 +17,7 @@ services:
     networks:
       - microservices-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -25,7 +25,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: redis
-    command: redis-server --requirepass redis123
+    command: redis-server --requirepass ${REDIS_PASSWORD}
     ports:
       - "6379:6379"
     volumes:
@@ -113,9 +113,9 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_SERVER=http://eureka-server:8761/eureka/
       - REDIS_HOST=redis
-      - REDIS_PASSWORD=redis123
-      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-minimum-256-bits
-      - CORS_ALLOWED_ORIGIN=http://localhost:3000
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ALLOWED_ORIGIN=${CORS_ALLOWED_ORIGIN}
     networks:
       - microservices-network
     healthcheck:
@@ -145,14 +145,14 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_SERVER=http://eureka-server:8761/eureka/
       - DB_URL=jdbc:postgresql://postgres:5432/auth_db
-      - DB_USERNAME=admin
-      - DB_PASSWORD=admin123
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
       - REDIS_HOST=redis
-      - REDIS_PASSWORD=redis123
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
-      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-minimum-256-bits
-      - OAUTH2_CLIENT_ID=auth-service
-      - OAUTH2_CLIENT_SECRET=auth-service-secret-change-in-production
+      - JWT_SECRET=${JWT_SECRET}
+      - OAUTH2_CLIENT_ID=${OAUTH2_CLIENT_ID}
+      - OAUTH2_CLIENT_SECRET=${OAUTH2_CLIENT_SECRET}
     networks:
       - microservices-network
     healthcheck:
@@ -178,9 +178,9 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_SERVER=http://eureka-server:8761/eureka/
       - DB_URL=jdbc:postgresql://postgres:5432/user_db
-      - DB_USERNAME=admin
-      - DB_PASSWORD=admin123
-      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-minimum-256-bits
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
     networks:
       - microservices-network
     healthcheck:
@@ -208,11 +208,11 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - MAIL_HOST=smtp.gmail.com
       - MAIL_PORT=587
-      - MAIL_USERNAME=your-email@gmail.com
-      - MAIL_PASSWORD=your-app-password
-      - EMAIL_FROM_ADDRESS=your-email@gmail.com
-      - EMAIL_FROM_NAME=Udemy Clone
-      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-minimum-256-bits
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - EMAIL_FROM_ADDRESS=${EMAIL_FROM_ADDRESS}
+      - EMAIL_FROM_NAME=${EMAIL_FROM_NAME}
+      - JWT_SECRET=${JWT_SECRET}
     networks:
       - microservices-network
     healthcheck:
