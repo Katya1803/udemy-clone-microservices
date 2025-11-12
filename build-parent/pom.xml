@@ -18,35 +18,29 @@
     <packaging>pom</packaging>
 
     <name>Build Parent</name>
-    <description>Parent POM with dependency management, plugin management, and enforcer rules</description>
+    <description>Parent POM with dependency management</description>
 
     <properties>
-        <!-- Java Version -->
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-
-        <!-- Encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!-- Spring Cloud Version -->
+        <!-- Versions -->
         <spring-cloud.version>2023.0.0</spring-cloud.version>
-
-        <!-- Dependency Versions -->
         <jjwt.version>0.12.3</jjwt.version>
         <lombok.version>1.18.30</lombok.version>
         <resilience4j.version>2.2.0</resilience4j.version>
+        <logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
 
-        <!-- Plugin Versions -->
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
     </properties>
 
-    <!-- DEPENDENCY MANAGEMENT (BOM) -->
     <dependencyManagement>
         <dependencies>
-            <!-- ===== Spring Cloud BOM ===== -->
+            <!-- Spring Cloud BOM -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -55,7 +49,7 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- ===== Resilience4j BOM ===== -->
+            <!-- Resilience4j BOM -->
             <dependency>
                 <groupId>io.github.resilience4j</groupId>
                 <artifactId>resilience4j-bom</artifactId>
@@ -64,7 +58,7 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- ===== JWT Dependencies ===== -->
+            <!-- JWT -->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-api</artifactId>
@@ -83,7 +77,14 @@
                 <scope>runtime</scope>
             </dependency>
 
-            <!-- ===== Internal Modules ===== -->
+            <!-- Logstash Logback Encoder -->
+            <dependency>
+                <groupId>net.logstash.logback</groupId>
+                <artifactId>logstash-logback-encoder</artifactId>
+                <version>${logstash-logback-encoder.version}</version>
+            </dependency>
+
+            <!-- Internal Modules -->
             <dependency>
                 <groupId>com.app</groupId>
                 <artifactId>common</artifactId>
@@ -92,11 +93,9 @@
         </dependencies>
     </dependencyManagement>
 
-    <!-- PLUGINS -->
     <build>
         <pluginManagement>
             <plugins>
-                <!-- Spring Boot Maven Plugin -->
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
@@ -110,7 +109,6 @@
                     </configuration>
                 </plugin>
 
-                <!-- Maven Compiler Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -124,9 +122,7 @@
             </plugins>
         </pluginManagement>
 
-        <!-- Plugins (Applied to all children) -->
         <plugins>
-            <!-- Maven Enforcer Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -139,11 +135,9 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <!-- Require Maven 3.6.0+ -->
                                 <requireMavenVersion>
                                     <version>[3.6.0,)</version>
                                 </requireMavenVersion>
-                                <!-- Require Java 17+ -->
                                 <requireJavaVersion>
                                     <version>[17,)</version>
                                 </requireJavaVersion>
