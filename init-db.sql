@@ -12,6 +12,8 @@ $$;
 \connect postgres
 CREATE DATABASE auth_db;
 CREATE DATABASE user_db;
+CREATE DATABASE course_db;
+
 
 -- Tạo user nếu chưa có
 DO
@@ -26,3 +28,5 @@ $$;
 -- Gán quyền cho user
 GRANT ALL PRIVILEGES ON DATABASE auth_db TO admin;
 GRANT ALL PRIVILEGES ON DATABASE user_db TO admin;
+GRANT ALL PRIVILEGES ON DATABASE course_db TO admin;
+

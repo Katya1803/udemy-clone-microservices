@@ -7,20 +7,26 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="api-gateway" />
+        <module name="course-service" />
         <module name="auth-service" />
-        <module name="user-service" />
         <module name="common" />
-        <module name="eureka-server" />
         <module name="email-service" />
+        <module name="api-gateway" />
+        <module name="user-service" />
+        <module name="eureka-server" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="course" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="auth-service" options="-parameters" />
       <module name="common" options="-parameters" />
+      <module name="course" options="-parameters" />
+      <module name="course-service" options="-parameters" />
       <module name="email-service" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="udemy-clone-microservices" options="" />
