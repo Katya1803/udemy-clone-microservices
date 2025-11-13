@@ -163,6 +163,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - SERVER_PORT=8761
       - EUREKA_HOSTNAME=eureka-server
+      - LOGSTASH_HOST=logstash
     networks:
       - microservices-network
     healthcheck:
@@ -195,6 +196,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - JWT_ISSUER=microservices-security
       - CORS_ALLOWED_ORIGIN=${CORS_ALLOWED_ORIGIN}
+      - LOGSTASH_HOST=logstash
     networks:
       - microservices-network
     healthcheck:
@@ -236,6 +238,7 @@ services:
       - JWT_ISSUER=auth-service
       - OAUTH2_CLIENT_ID=${OAUTH2_CLIENT_ID}
       - OAUTH2_CLIENT_SECRET=${OAUTH2_CLIENT_SECRET}
+      - LOGSTASH_HOST=logstash
     networks:
       - microservices-network
     healthcheck:
@@ -267,6 +270,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_ISSUER=auth-service
+      - LOGSTASH_HOST=logstash
     networks:
       - microservices-network
     healthcheck:
@@ -302,6 +306,7 @@ services:
       - EMAIL_FROM_NAME=${EMAIL_FROM_NAME}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_ISSUER=auth-service
+      - LOGSTASH_HOST=logstash
     networks:
       - microservices-network
     healthcheck:
