@@ -14,7 +14,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
-      - microservices-network
+      - nullpointer-app
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
       interval: 10s
@@ -31,7 +31,7 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - microservices-network
+      - nullpointer-app
     healthcheck:
       test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
       interval: 10s
@@ -51,7 +51,7 @@ services:
       - zookeeper_data:/var/lib/zookeeper/data
       - zookeeper_logs:/var/lib/zookeeper/log
     networks:
-      - microservices-network
+      - nullpointer-app
     restart: unless-stopped
 
   kafka:
@@ -72,7 +72,7 @@ services:
     volumes:
       - kafka_data:/var/lib/kafka/data
     networks:
-      - microservices-network
+      - nullpointer-app
     healthcheck:
       test: kafka-topics --bootstrap-server localhost:9092 --list
       interval: 30s
@@ -90,7 +90,7 @@ services:
     ports:
       - "5050:80"
     networks:
-      - microservices-network
+      - nullpointer-app
 
   # ELK Stack Services
   elasticsearch:
@@ -106,7 +106,7 @@ services:
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
-      - microservices-network
+      - nullpointer-app
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
       interval: 30s
@@ -127,7 +127,7 @@ services:
     environment:
       - "LS_JAVA_OPTS=-Xms256m -Xmx256m"
     networks:
-      - microservices-network
+      - nullpointer-app
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -141,7 +141,7 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     networks:
-      - microservices-network
+      - nullpointer-app
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -165,7 +165,7 @@ services:
       - EUREKA_HOSTNAME=eureka-server
       - LOGSTASH_HOST=logstash
     networks:
-      - microservices-network
+      - nullpointer-app
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8761/actuator/health"]
       interval: 30s
@@ -193,13 +193,12 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
       - JWT_ISSUER=microservices-security
       - CORS_ALLOWED_ORIGIN=${CORS_ALLOWED_ORIGIN}
       - LOGSTASH_HOST=logstash
       - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
     networks:
-      - microservices-network
+      - nullpointer-app
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
       interval: 30s
@@ -237,13 +236,12 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
       - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
-      - JWT_SECRET=${JWT_SECRET}
       - JWT_ISSUER=auth-service
       - OAUTH2_CLIENT_ID=${OAUTH2_CLIENT_ID}
       - OAUTH2_CLIENT_SECRET=${OAUTH2_CLIENT_SECRET}
       - LOGSTASH_HOST=logstash
     networks:
-      - microservices-network
+      - nullpointer-app
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
       interval: 30s
@@ -271,12 +269,11 @@ services:
       - DB_URL=jdbc:postgresql://postgres:5432/user_db
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
       - JWT_ISSUER=auth-service
       - LOGSTASH_HOST=logstash
       - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
     networks:
-      - microservices-network
+      - nullpointer-app
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/actuator/health"]
       interval: 30s
@@ -308,12 +305,11 @@ services:
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - EMAIL_FROM_ADDRESS=${EMAIL_FROM_ADDRESS}
       - EMAIL_FROM_NAME=${EMAIL_FROM_NAME}
-      - JWT_SECRET=${JWT_SECRET}
       - JWT_ISSUER=auth-service
       - LOGSTASH_HOST=logstash
       - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
     networks:
-      - microservices-network
+      - nullpointer-app
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8083/actuator/health"]
       interval: 30s
@@ -341,11 +337,10 @@ services:
       - DB_URL=jdbc:postgresql://postgres:5432/course_db
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
       - JWT_ISSUER=auth-service
       - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
     networks:
-      - microservices-network
+      - nullpointer-app
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/actuator/health" ]
       interval: 30s
@@ -355,7 +350,7 @@ services:
     restart: unless-stopped
 
 networks:
-  microservices-network:
+  nullpointer-app:
     driver: bridge
 
 volumes:

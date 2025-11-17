@@ -10,46 +10,32 @@
     {
       "name": "jwt.access-token-expiration",
       "type": "java.lang.Long",
-      "description": "Access token expiration in milliseconds Default: 15 minutes (900000ms)",
       "sourceType": "com.app.common.security.JwtProperties"
     },
     {
       "name": "jwt.issuer",
       "type": "java.lang.String",
-      "description": "JWT Issuer (who created the token)",
       "sourceType": "com.app.common.security.JwtProperties"
     },
     {
       "name": "jwt.private-key",
       "type": "java.lang.String",
-      "description": "RSA Private Key (Base64 encoded) Used ONLY by auth-service to SIGN tokens MUST be kept secret!",
       "sourceType": "com.app.common.security.JwtProperties"
     },
     {
       "name": "jwt.public-key",
       "type": "java.lang.String",
-      "description": "RSA Public Key (Base64 encoded) Used by ALL services to VERIFY tokens Safe to share across services",
       "sourceType": "com.app.common.security.JwtProperties"
     },
     {
       "name": "jwt.refresh-token-expiration",
       "type": "java.lang.Long",
-      "description": "Refresh token expiration in milliseconds Default: 7 days (604800000ms)",
       "sourceType": "com.app.common.security.JwtProperties"
     },
     {
       "name": "jwt.service-token-expiration",
       "type": "java.lang.Long",
-      "description": "Service-to-service token expiration in milliseconds Default: 5 minutes (300000ms)",
       "sourceType": "com.app.common.security.JwtProperties"
-    },
-    {
-      "name": "jwt.secret",
-      "type": "java.lang.String",
-      "description": "@deprecated Use RSA keys instead (publicKey\/privateKey) HMAC shared secret - NOT recommended for production",
-      "sourceType": "com.app.common.security.JwtProperties",
-      "deprecated": true,
-      "deprecation": {}
     }
   ],
   "hints": []
