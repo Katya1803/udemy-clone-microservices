@@ -36,12 +36,10 @@ public class JwtTokenValidator {
 
     /**
      * Validate JWT token signature and expiration
-     * @return true if valid, throws exception if invalid
      */
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             getClaims(token); // Will throw exception if invalid
-            return true;
         } catch (SignatureException ex) {
             log.error("Invalid JWT signature: {}", ex.getMessage());
             throw new InvalidTokenException("Invalid token signature");
