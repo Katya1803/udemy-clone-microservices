@@ -64,6 +64,8 @@ eureka:
 # JWT Configuration
 jwt:
   secret: ${JWT_SECRET}
+  public-key: ${JWT_PUBLIC_KEY}
+  private-key: ${JWT_PRIVATE_KEY}
   access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
   refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
   service-token-expiration: ${JWT_SERVICE_EXPIRATION:300000}
