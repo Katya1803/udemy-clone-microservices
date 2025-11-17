@@ -4,9 +4,6 @@ server:
 spring:
   application:
     name: eureka-server
-  profiles:
-    active: local
-
 
 eureka:
   instance:
@@ -23,6 +20,3 @@ logging:
   level:
     com.netflix.eureka: ${LOG_LEVEL_EUREKA:OFF}
     com.netflix.discovery: ${LOG_LEVEL_DISCOVERY:OFF}
-
-
-

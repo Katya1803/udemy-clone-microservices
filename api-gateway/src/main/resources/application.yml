@@ -4,8 +4,6 @@ server:
 spring:
   application:
     name: api-gateway
-  profiles:
-    active: local
 
   # Redis Configuration (Reactive)
   data:
@@ -56,7 +54,6 @@ eureka:
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET}
   issuer: ${JWT_ISSUER:microservices-security}
   access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
   refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:2592000000}

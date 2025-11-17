@@ -9,13 +9,11 @@ server:
 spring:
   application:
     name: course-service
-  profiles:
-    active: local
 
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/course_db}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:x}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: ${DB_POOL_MAX:10}
@@ -45,19 +43,17 @@ eureka:
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET}
   access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
   refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
   service-token-expiration: ${JWT_SERVICE_EXPIRATION:300000}
   issuer: ${JWT_ISSUER:auth-service}
   public-key: ${JWT_PUBLIC_KEY}
 
-
 # Logging
 logging:
   level:
     root: ${LOG_LEVEL_ROOT:INFO}
-    com.app.user: ${LOG_LEVEL_USER:DEBUG}
+    com.app.course: ${LOG_LEVEL_COURSE:DEBUG}
     org.springframework.security: ${LOG_LEVEL_SECURITY:INFO}
     org.hibernate.SQL: ${LOG_LEVEL_SQL:DEBUG}
 
@@ -112,6 +108,6 @@ resilience4j:
         max-concurrent-calls: 10
         max-wait-duration: 500ms
     instances:
-      userOperations:
+      courseOperations:
         max-concurrent-calls: 25
         max-wait-duration: 1000ms

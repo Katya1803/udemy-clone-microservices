@@ -19,9 +19,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Handles all exceptions and converts them to standardized JSON error responses
- */
+
 @Slf4j
 @Order(-2)
 @Component
@@ -58,10 +56,6 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler {
     private HttpStatus determineHttpStatus(Throwable ex) {
         if (ex instanceof ResponseStatusException rse) {
             return HttpStatus.resolve(rse.getStatusCode().value());
-        }
-
-        if (ex instanceof org.springframework.web.server.ServerWebInputException) {
-            return HttpStatus.BAD_REQUEST;
         }
 
         if (ex.getMessage() != null) {

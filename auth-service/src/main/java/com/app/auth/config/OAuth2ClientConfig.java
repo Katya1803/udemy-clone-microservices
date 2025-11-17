@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Configure properties for service-to-service calls
- */
+
 @Configuration
 public class OAuth2ClientConfig {
 

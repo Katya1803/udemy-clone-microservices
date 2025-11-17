@@ -44,8 +44,7 @@ public class TokenBlacklistServiceImpl implements TokenBlacklistService {
         try {
             String jti = jwtTokenValidator.getJti(token);
             String key = RedisConstants.REDIS_BLACKLIST_PREFIX + jti;
-            Boolean exists = redisTemplate.hasKey(key);
-            return Boolean.TRUE.equals(exists);
+            return redisTemplate.hasKey(key);
         } catch (Exception e) {
             log.warn("Failed to check blacklist status for token", e);
             return false;

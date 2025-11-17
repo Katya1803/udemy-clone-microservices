@@ -97,7 +97,6 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
-    // ✅ Update LoginResponse to use getRolesAsString()
     @Override
     @Transactional
     public LoginResponse login(LoginRequest loginRequest) {

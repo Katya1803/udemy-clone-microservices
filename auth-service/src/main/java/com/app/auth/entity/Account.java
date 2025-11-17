@@ -34,7 +34,6 @@ public class Account extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    // ✅ CHANGED: Single enum → Set of enums
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "account_roles", joinColumns = @JoinColumn(name = "account_id"))
     @Enumerated(EnumType.STRING)
@@ -55,7 +54,7 @@ public class Account extends BaseEntity {
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<AuthIdentity> providers = new HashSet<>();
 
-    // ✅ Helper methods
+
     public boolean isActive() {
         return status == AccountStatus.ACTIVE;
     }
@@ -81,7 +80,6 @@ public class Account extends BaseEntity {
         return this.roles.contains(role);
     }
 
-    // ✅ Convert roles to comma-separated string for JWT
     public String getRolesAsString() {
         return roles.stream()
                 .map(Role::name)
@@ -89,7 +87,6 @@ public class Account extends BaseEntity {
                 .collect(Collectors.joining(","));
     }
 
-    // ✅ Parse roles from string
     public static Set<Role> parseRoles(String rolesStr) {
         if (rolesStr == null || rolesStr.isBlank()) {
             return Set.of(Role.USER);

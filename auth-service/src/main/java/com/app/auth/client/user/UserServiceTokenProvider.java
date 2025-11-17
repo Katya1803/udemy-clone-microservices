@@ -7,9 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-/**
- * Token Provider for User Service calls
- */
+
 @Slf4j
 @Component
 public class UserServiceTokenProvider extends BaseOAuth2TokenProvider {

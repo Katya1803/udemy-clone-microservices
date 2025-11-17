@@ -4,6 +4,8 @@ import com.app.common.client.BaseOAuth2TokenProvider;
 import com.app.common.constant.SecurityConstants;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,10 +20,8 @@ public class OAuth2FeignRequestInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate template) {
         try {
-            // Get service token for target audience
             String token = tokenProvider.getServiceToken(audience);
 
-            // Add Authorization header
             template.header(
                     SecurityConstants.JWT_HEADER,
                     SecurityConstants.JWT_PREFIX + token

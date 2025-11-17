@@ -6,12 +6,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.app</groupId>
-    <artifactId>microservices-security</artifactId>
+    <artifactId>null-pointer</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Udemy Clone</name>
-    <description>Build an Udemy-likely project with Microservices architecture</description>
+    <name>Null Pointer</name>
+    <description>Build an E-Learning platform for every Java devs</description>
 
     <modules>
         <module>build-parent</module>

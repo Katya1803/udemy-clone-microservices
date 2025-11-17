@@ -1,5 +1,8 @@
 package com.app.common.constant;
 
+import lombok.Getter;
+
+@Getter
 public enum ErrorCode {
 
     // ========== Authentication Errors (401) ==========
@@ -40,10 +43,6 @@ public enum ErrorCode {
 
     ErrorCode(String message) {
         this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
     public String getCode() {

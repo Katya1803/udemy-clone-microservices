@@ -22,15 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * JWT Token Generator (Auth Service ONLY)
- * Signs tokens using either:
- * - RSA Private Key (recommended for production)
- * - HMAC Shared Secret (deprecated, for backward compatibility)
- *
- * Only auth-service has the private key to CREATE tokens
- * Other services only have public key to VERIFY tokens
- */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -88,10 +80,7 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
         return jwtProperties.getServiceTokenExpiration() / 1000;
     }
 
-    /**
-     * Build JWT token using RSA or HMAC signing
-     * Automatically selects algorithm based on configuration
-     */
+
     private String buildToken(Map<String, Object> claims, String subject, Instant issuedAt, Instant expiration) {
         if (jwtProperties.isRsaMode()) {
             log.debug("Generating token with RSA private key (RS256)");
@@ -103,17 +92,6 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
                     .expiration(Date.from(expiration))
                     .id(UUID.randomUUID().toString())
                     .signWith(getPrivateKey(), Jwts.SIG.RS256)
-                    .compact();
-        } else if (jwtProperties.isHmacMode()) {
-            log.debug("Generating token with HMAC (consider migrating to RSA for production)");
-            return Jwts.builder()
-                    .claims(claims)
-                    .subject(subject)
-                    .issuer(jwtProperties.getIssuer())
-                    .issuedAt(Date.from(issuedAt))
-                    .expiration(Date.from(expiration))
-                    .id(UUID.randomUUID().toString())
-                    .signWith(getHmacKey(), Jwts.SIG.HS256)
                     .compact();
         } else {
             throw new IllegalStateException("No JWT signing key configured! Set either jwt.privateKey (RSA) or jwt.secret (HMAC)");
@@ -137,27 +115,12 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
                     .id(UUID.randomUUID().toString())
                     .signWith(getPrivateKey(), Jwts.SIG.RS256)
                     .compact();
-        } else if (jwtProperties.isHmacMode()) {
-            log.debug("Generating service token with HMAC (consider migrating to RSA for production)");
-            return Jwts.builder()
-                    .claims(claims)
-                    .subject(subject)
-                    .issuer(jwtProperties.getIssuer())
-                    .audience().add(audience).and()
-                    .issuedAt(Date.from(issuedAt))
-                    .expiration(Date.from(expiration))
-                    .id(UUID.randomUUID().toString())
-                    .signWith(getHmacKey(), Jwts.SIG.HS256)
-                    .compact();
         } else {
             throw new IllegalStateException("No JWT signing key configured! Set either jwt.privateKey (RSA) or jwt.secret (HMAC)");
         }
     }
 
-    /**
-     * Get RSA Private Key for token signing
-     * ONLY auth-service should have access to this key
-     */
+
     private PrivateKey getPrivateKey() {
         try {
             if (jwtProperties.getPrivateKey() == null || jwtProperties.getPrivateKey().isBlank()) {
@@ -165,8 +128,6 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
             }
 
             String privateKeyPEM = jwtProperties.getPrivateKey()
-                    .replace("-----BEGIN PRIVATE KEY-----", "")
-                    .replace("-----END PRIVATE KEY-----", "")
                     .replaceAll("\\s", "");
 
             byte[] keyBytes = Base64.getDecoder().decode(privateKeyPEM);
@@ -178,13 +139,4 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
         }
     }
 
-    /**
-     * Get HMAC Secret Key for token signing
-     * @deprecated Use RSA instead for production
-     */
-    @Deprecated
-    private SecretKey getHmacKey() {
-        byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
 }

@@ -4,14 +4,12 @@ server:
 spring:
   application:
     name: email-service
-  profiles:
-    active: local
 
   # Mail Configuration
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME}
+    username: ${MAIL_USERNAME:katyavu.work@gmail.com}
     password: ${MAIL_PASSWORD}
     properties:
       mail:
@@ -55,7 +53,6 @@ eureka:
 
 # JWT Configuration (for service-to-service auth)
 jwt:
-  secret: ${JWT_SECRET}
   access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
   refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
   service-token-expiration: ${JWT_SERVICE_EXPIRATION:300000}
@@ -65,7 +62,7 @@ jwt:
 # Email Configuration
 email:
   from:
-    address: ${EMAIL_FROM_ADDRESS}
+    address: ${EMAIL_FROM_ADDRESS:katyavu.work@gmail.com}
     name: ${EMAIL_FROM_NAME:NullPointer}
 
 # Logging

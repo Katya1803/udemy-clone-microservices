@@ -1,7 +1,7 @@
 package com.app.gateway.filter;
 
 import com.app.gateway.security.GatewayTokenValidator;
-import com.app.gateway.security.SecurityConstants;
+import com.app.gateway.security.GatewayConstants;
 import com.app.gateway.service.GatewayTokenBlacklist;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,9 +70,9 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                         log.debug("Authenticated user: {} with roles: {}", userId, roles);
 
                         ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
-                                .header(SecurityConstants.HEADER_USER_ID, userId)
-                                .header(SecurityConstants.HEADER_USER_ROLES, String.join(",", roles))
-                                .header(SecurityConstants.HEADER_USER_EMAIL, email)
+                                .header(GatewayConstants.HEADER_ACCOUNT_ID, userId)
+                                .header(GatewayConstants.HEADER_ACCOUNT_ROLE, String.join(",", roles))
+                                .header(GatewayConstants.HEADER_ACCOUNT_EMAIL, email)
                                 .build();
 
                         ServerWebExchange modifiedExchange = exchange.mutate()
@@ -95,29 +95,23 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         }
     }
 
-    /**
-     * Extract JWT token from Authorization header
-     */
-    private String extractToken(ServerHttpRequest request) {
-        String bearerToken = request.getHeaders().getFirst(SecurityConstants.JWT_HEADER);
 
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(SecurityConstants.JWT_PREFIX)) {
-            return bearerToken.substring(SecurityConstants.JWT_PREFIX.length());
+    private String extractToken(ServerHttpRequest request) {
+        String bearerToken = request.getHeaders().getFirst(GatewayConstants.JWT_HEADER);
+
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(GatewayConstants.JWT_PREFIX)) {
+            return bearerToken.substring(GatewayConstants.JWT_PREFIX.length());
         }
 
         return null;
     }
 
-    /**
-     * Check if path is public (no auth required)
-     */
+
     private boolean isPublicPath(String path) {
         return PUBLIC_PATHS.stream().anyMatch(path::startsWith);
     }
 
-    /**
-     * Handle authentication errors
-     */
+
     private Mono<Void> onError(ServerWebExchange exchange, String message, HttpStatus status) {
         exchange.getResponse().setStatusCode(status);
         exchange.getResponse().getHeaders().add("Content-Type", "application/json");

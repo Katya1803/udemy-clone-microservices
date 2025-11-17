@@ -19,14 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * JWT Token Validator
- * Validates JWT tokens using either:
- * - RSA Public Key (recommended for production)
- * - HMAC Shared Secret (deprecated, for backward compatibility)
- *
- * This class is used by ALL services (auth, user, email, course) and API Gateway
- */
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -34,12 +27,9 @@ public class JwtTokenValidator {
 
     private final JwtProperties jwtProperties;
 
-    /**
-     * Validate JWT token signature and expiration
-     */
     public void validateToken(String token) {
         try {
-            getClaims(token); // Will throw exception if invalid
+            getClaims(token);
         } catch (SignatureException ex) {
             log.error("Invalid JWT signature: {}", ex.getMessage());
             throw new InvalidTokenException("Invalid token signature");
@@ -58,23 +48,12 @@ public class JwtTokenValidator {
         }
     }
 
-    /**
-     * Extract all claims from JWT token
-     * Automatically selects RSA or HMAC verification based on configuration
-     */
     public Claims getClaims(String token) {
         try {
             if (jwtProperties.isRsaMode()) {
                 log.debug("Validating token with RSA public key");
                 return Jwts.parser()
                         .verifyWith(getPublicKey())
-                        .build()
-                        .parseSignedClaims(token)
-                        .getPayload();
-            } else if (jwtProperties.isHmacMode()) {
-                log.debug("Validating token with HMAC (consider migrating to RSA for production)");
-                return Jwts.parser()
-                        .verifyWith(getHmacKey())
                         .build()
                         .parseSignedClaims(token)
                         .getPayload();
@@ -87,16 +66,11 @@ public class JwtTokenValidator {
         }
     }
 
-    // ========== Token Data Extraction Methods ==========
 
     public String getUserId(String token) {
         return getClaims(token).getSubject();
     }
 
-    /**
-     * Get roles as List<String>
-     * Parses comma-separated roles: "ROLE_USER,ROLE_ADMIN" -> ["ROLE_USER", "ROLE_ADMIN"]
-     */
     public List<String> getRoles(String token) {
         Claims claims = getClaims(token);
         String rolesString = claims.get("roles", String.class);
@@ -106,17 +80,12 @@ public class JwtTokenValidator {
             return List.of("ROLE_SERVICE");
         }
 
-        // Parse "ROLE_USER,ROLE_ADMIN" → ["ROLE_USER", "ROLE_ADMIN"]
         return Arrays.stream(rolesString.split(","))
                 .map(String::trim)
                 .filter(role -> !role.isEmpty())
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Get roles as single comma-separated string
-     * For backward compatibility
-     */
     public String getRolesAsString(String token) {
         Claims claims = getClaims(token);
         return claims.get("roles", String.class);
@@ -166,12 +135,6 @@ public class JwtTokenValidator {
         return getClaims(token).getAudience().iterator().next();
     }
 
-    // ========== Key Management (Private Methods) ==========
-
-    /**
-     * Get RSA Public Key for token verification
-     * Public key is safe to share across all services
-     */
     private PublicKey getPublicKey() {
         try {
             String publicKeyPEM = jwtProperties.getPublicKey()
@@ -188,13 +151,4 @@ public class JwtTokenValidator {
         }
     }
 
-    /**
-     * Get HMAC Secret Key for token verification
-     * @deprecated Use RSA instead for production
-     */
-    @Deprecated
-    private SecretKey getHmacKey() {
-        byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
 }
