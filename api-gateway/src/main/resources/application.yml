@@ -61,6 +61,7 @@ jwt:
   access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
   refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:2592000000}
   service-token-expiration: ${JWT_SERVICE_EXPIRATION:300000}
+  public-key: ${JWT_PUBLIC_KEY}
 
 # Rate Limiting Configuration
 rate-limit:

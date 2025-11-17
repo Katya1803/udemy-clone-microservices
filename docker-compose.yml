@@ -197,6 +197,7 @@ services:
       - JWT_ISSUER=microservices-security
       - CORS_ALLOWED_ORIGIN=${CORS_ALLOWED_ORIGIN}
       - LOGSTASH_HOST=logstash
+      - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
     networks:
       - microservices-network
     healthcheck:
@@ -234,6 +235,8 @@ services:
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
+      - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_ISSUER=auth-service
       - OAUTH2_CLIENT_ID=${OAUTH2_CLIENT_ID}
@@ -271,6 +274,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - JWT_ISSUER=auth-service
       - LOGSTASH_HOST=logstash
+      - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
     networks:
       - microservices-network
     healthcheck:
@@ -307,6 +311,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - JWT_ISSUER=auth-service
       - LOGSTASH_HOST=logstash
+      - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
     networks:
       - microservices-network
     healthcheck:
@@ -338,6 +343,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_ISSUER=auth-service
+      - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
     networks:
       - microservices-network
     healthcheck:

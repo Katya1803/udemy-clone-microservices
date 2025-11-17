@@ -1,21 +1,36 @@
 package com.app.auth.service.impl;
 
-import com.app.auth.client.user.UserServiceClient;
 import com.app.auth.entity.Account;
 import com.app.auth.service.JwtTokenGenerator;
 import com.app.common.constant.SecurityConstants;
 import com.app.common.security.JwtProperties;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.Instant;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
+/**
+ * JWT Token Generator (Auth Service ONLY)
+ * Signs tokens using either:
+ * - RSA Private Key (recommended for production)
+ * - HMAC Shared Secret (deprecated, for backward compatibility)
+ *
+ * Only auth-service has the private key to CREATE tokens
+ * Other services only have public key to VERIFY tokens
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -36,15 +51,7 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
         claims.put("email", account.getEmail());
         claims.put("username", account.getUsername());
 
-        String token = Jwts.builder()
-                .subject(account.getId())
-                .issuer(jwtProperties.getIssuer())
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(expiration))
-                .id(UUID.randomUUID().toString())
-                .claims(claims)
-                .signWith(getSigningKey())
-                .compact();
+        String token = buildToken(claims, account.getId(), now, expiration);
 
         log.debug("Generated access token for user: {}, roles: {}, expires at: {}",
                 account.getUsername(), rolesString, expiration);
@@ -61,19 +68,9 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
         claims.put("token_type", SecurityConstants.TOKEN_TYPE_SERVICE);
         claims.put("client_id", clientId);
         claims.put("scope", scope);
-        // ✅ FIXED: Service tokens have ROLE_SERVICE
-        claims.put("roles", SecurityConstants.ROLE_SERVICE); // Single role as String
+        claims.put("roles", SecurityConstants.ROLE_SERVICE);
 
-        String token = Jwts.builder()
-                .subject(clientId)
-                .issuer(jwtProperties.getIssuer())
-                .audience().add(audience).and()
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(expiration))
-                .id(UUID.randomUUID().toString())
-                .claims(claims)
-                .signWith(getSigningKey())
-                .compact();
+        String token = buildTokenWithAudience(claims, clientId, audience, now, expiration);
 
         log.debug("Generated service token for client: {}, audience: {}, expires at: {}",
                 clientId, audience, expiration);
@@ -91,7 +88,102 @@ public class JwtTokenGeneratorImpl implements JwtTokenGenerator {
         return jwtProperties.getServiceTokenExpiration() / 1000;
     }
 
-    private SecretKey getSigningKey() {
+    /**
+     * Build JWT token using RSA or HMAC signing
+     * Automatically selects algorithm based on configuration
+     */
+    private String buildToken(Map<String, Object> claims, String subject, Instant issuedAt, Instant expiration) {
+        if (jwtProperties.isRsaMode()) {
+            log.debug("Generating token with RSA private key (RS256)");
+            return Jwts.builder()
+                    .claims(claims)
+                    .subject(subject)
+                    .issuer(jwtProperties.getIssuer())
+                    .issuedAt(Date.from(issuedAt))
+                    .expiration(Date.from(expiration))
+                    .id(UUID.randomUUID().toString())
+                    .signWith(getPrivateKey(), Jwts.SIG.RS256)
+                    .compact();
+        } else if (jwtProperties.isHmacMode()) {
+            log.debug("Generating token with HMAC (consider migrating to RSA for production)");
+            return Jwts.builder()
+                    .claims(claims)
+                    .subject(subject)
+                    .issuer(jwtProperties.getIssuer())
+                    .issuedAt(Date.from(issuedAt))
+                    .expiration(Date.from(expiration))
+                    .id(UUID.randomUUID().toString())
+                    .signWith(getHmacKey(), Jwts.SIG.HS256)
+                    .compact();
+        } else {
+            throw new IllegalStateException("No JWT signing key configured! Set either jwt.privateKey (RSA) or jwt.secret (HMAC)");
+        }
+    }
+
+    /**
+     * Build JWT token with audience claim (for service tokens)
+     */
+    private String buildTokenWithAudience(Map<String, Object> claims, String subject, String audience,
+                                          Instant issuedAt, Instant expiration) {
+        if (jwtProperties.isRsaMode()) {
+            log.debug("Generating service token with RSA private key (RS256)");
+            return Jwts.builder()
+                    .claims(claims)
+                    .subject(subject)
+                    .issuer(jwtProperties.getIssuer())
+                    .audience().add(audience).and()
+                    .issuedAt(Date.from(issuedAt))
+                    .expiration(Date.from(expiration))
+                    .id(UUID.randomUUID().toString())
+                    .signWith(getPrivateKey(), Jwts.SIG.RS256)
+                    .compact();
+        } else if (jwtProperties.isHmacMode()) {
+            log.debug("Generating service token with HMAC (consider migrating to RSA for production)");
+            return Jwts.builder()
+                    .claims(claims)
+                    .subject(subject)
+                    .issuer(jwtProperties.getIssuer())
+                    .audience().add(audience).and()
+                    .issuedAt(Date.from(issuedAt))
+                    .expiration(Date.from(expiration))
+                    .id(UUID.randomUUID().toString())
+                    .signWith(getHmacKey(), Jwts.SIG.HS256)
+                    .compact();
+        } else {
+            throw new IllegalStateException("No JWT signing key configured! Set either jwt.privateKey (RSA) or jwt.secret (HMAC)");
+        }
+    }
+
+    /**
+     * Get RSA Private Key for token signing
+     * ONLY auth-service should have access to this key
+     */
+    private PrivateKey getPrivateKey() {
+        try {
+            if (jwtProperties.getPrivateKey() == null || jwtProperties.getPrivateKey().isBlank()) {
+                throw new IllegalStateException("jwt.privateKey not configured for auth-service!");
+            }
+
+            String privateKeyPEM = jwtProperties.getPrivateKey()
+                    .replace("-----BEGIN PRIVATE KEY-----", "")
+                    .replace("-----END PRIVATE KEY-----", "")
+                    .replaceAll("\\s", "");
+
+            byte[] keyBytes = Base64.getDecoder().decode(privateKeyPEM);
+            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            return keyFactory.generatePrivate(spec);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to load RSA private key", e);
+        }
+    }
+
+    /**
+     * Get HMAC Secret Key for token signing
+     * @deprecated Use RSA instead for production
+     */
+    @Deprecated
+    private SecretKey getHmacKey() {
         byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }

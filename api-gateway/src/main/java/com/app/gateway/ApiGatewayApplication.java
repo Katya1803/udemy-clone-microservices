@@ -6,7 +6,6 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication(scanBasePackages = {
 		"com.app.gateway",
-		"com.app.common"
 })
 @EnableDiscoveryClient
 public class ApiGatewayApplication {
