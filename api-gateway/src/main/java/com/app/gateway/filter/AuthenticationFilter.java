@@ -40,6 +40,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getPath().value();
 
+        if (request.getMethod().name().equalsIgnoreCase("OPTIONS")) {
+            return chain.filter(exchange);
+        }
+
         log.debug("Processing request: {} {}", request.getMethod(), path);
 
         if (isPublicPath(path)) {
