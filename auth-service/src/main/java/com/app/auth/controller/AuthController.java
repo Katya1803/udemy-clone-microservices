@@ -106,7 +106,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("Lax")
-                .path("/auth")
+                .path("/")
                 .maxAge(SecurityConstants.REFRESH_TOKEN_EXP)
                 .build();
 
