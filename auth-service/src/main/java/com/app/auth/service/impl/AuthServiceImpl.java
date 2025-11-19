@@ -229,23 +229,24 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public LoginResponse refresh(java.lang.String request) {
+    public LoginResponse refresh(String oldRefreshToken) {
         log.debug("Token refresh attempt");
 
-        java.lang.String userId = refreshTokenService.verifyRefreshToken(request);
+        String userId = refreshTokenService.verifyRefreshToken(oldRefreshToken);
 
         Account account = accountRepository.findById(userId)
                 .orElseThrow(() -> new InvalidTokenException("User not found"));
 
         if (!account.isActive()) {
-            refreshTokenService.revokeRefreshToken(request);
+            refreshTokenService.revokeRefreshToken(oldRefreshToken);
             throw new UnauthorizedException("User account is not active");
         }
 
-        java.lang.String newAccessToken = jwtTokenGenerator.generateAccessToken(account);
+        String newRefreshToken = refreshTokenService.createRefreshToken(account, null);
 
-        refreshTokenService.revokeRefreshToken(request);
-        java.lang.String newRefreshToken = refreshTokenService.createRefreshToken(account, null);
+        String newAccessToken = jwtTokenGenerator.generateAccessToken(account);
+
+        refreshTokenService.revokeRefreshToken(oldRefreshToken);
 
         log.info("Token refresh successful for user: {}", account.getUsername());
 
@@ -254,11 +255,18 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(newRefreshToken)
                 .tokenType("Bearer")
                 .expiresIn(jwtTokenGenerator.getAccessTokenExpirationSeconds())
+                .user(LoginResponse.UserInfo.builder()
+                        .id(account.getId())
+                        .username(account.getUsername())
+                        .email(account.getEmail())
+                        .roles(account.getRolesAsString())
+                        .build())
                 .build();
     }
 
+
     @Override
-    public void logout(java.lang.String accessToken, java.lang.String accountId) {
+    public void logout(String accessToken, String accountId) {
         log.info("Logout for user: {}", accountId);
 
         tokenBlacklistService.blacklistToken(accessToken);

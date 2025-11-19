@@ -223,6 +223,7 @@ services:
         condition: service_healthy
     ports:
       - "8081:8081"
+      - "5005:5005"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SERVER_PORT=8081
@@ -240,6 +241,7 @@ services:
       - OAUTH2_CLIENT_ID=${OAUTH2_CLIENT_ID}
       - OAUTH2_CLIENT_SECRET=${OAUTH2_CLIENT_SECRET}
       - LOGSTASH_HOST=logstash
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     networks:
       - nullpointer-app
     healthcheck:

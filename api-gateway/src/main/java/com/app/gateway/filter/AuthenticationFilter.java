@@ -26,7 +26,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private final GatewayTokenBlacklist tokenBlacklistService;
 
     private static final List<String> PUBLIC_PATHS = List.of(
-            "/auth/",
+            "/auth/login",
+            "/auth/register",
+            "/auth/verify-otp",
+            "/auth/resend-otp",
+            "/auth/refresh",    // Refresh dùng cookie, không cần Bearer
             "/test/public"
     );
 

@@ -104,7 +104,7 @@ public class AuthController {
     private ResponseEntity<ApiResponse<LoginResponse>> getApiResponseResponseEntity(LoginResponse response) {
         ResponseCookie refreshCookie = ResponseCookie.from("refresh", response.getRefreshToken())
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .sameSite("Lax")
                 .path("/")
                 .maxAge(SecurityConstants.REFRESH_TOKEN_EXP)
