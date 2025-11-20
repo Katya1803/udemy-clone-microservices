@@ -13,7 +13,7 @@
     <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
         <destination>${LOGSTASH_HOST:-logstash}:5000</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>{"app_name":"course-service","environment":"${SPRING_PROFILES_ACTIVE:-local}"}</customFields>
+            <customFields>{"app_name":"blog-service","environment":"${SPRING_PROFILES_ACTIVE:-local}"}</customFields>
         </encoder>
         <reconnectionDelay>10 seconds</reconnectionDelay>
     </appender>

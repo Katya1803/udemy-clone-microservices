@@ -29,6 +29,8 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/blogs/**",
+                                "/api/blogs/**",
                                 "/blogs/health",
                                 "/actuator/**"
                         ).permitAll()

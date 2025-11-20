@@ -31,7 +31,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/auth/verify-otp",
             "/auth/resend-otp",
             "/auth/refresh",    // Refresh dùng cookie, không cần Bearer
-            "/test/public"
+            "/test/public",
+            "/api/blogs/series"
     );
 
 

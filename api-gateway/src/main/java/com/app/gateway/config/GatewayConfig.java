@@ -37,6 +37,15 @@ public class GatewayConfig {
                         .uri("lb://user-service")
                 )
 
+                .route("blog-service", r -> r
+                        .path("/api/blogs/**")
+                        .filters(f -> f
+                                .stripPrefix(1)
+                                .retry(config -> config.setRetries(2))
+                        )
+                        .uri("lb://blog-service")
+                )
+
                 // Example service
                 .route("test-service", r -> r
                         .path("/api/test/**")
