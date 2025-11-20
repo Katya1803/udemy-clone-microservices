@@ -41,7 +41,7 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private Status status;
 
-    enum Status {
+    public enum Status {
         PUBLISHED, DRAFT, PENDING
     }
 
