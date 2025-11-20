@@ -6,7 +6,7 @@ WORKDIR /app
 COPY . .
 
 # Build module tương ứng
-RUN mvn -f pom.xml clean package -pl course-service -am -DskipTests
+RUN mvn -f pom.xml clean package -pl blog-service -am -DskipTests
 
 # ---------- RUNTIME STAGE ----------
 FROM eclipse-temurin:17-jre-alpine
@@ -17,7 +17,7 @@ RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
 # Copy jar ra từ stage build
-COPY --from=build /app/course-service/target/*.jar app.jar
+COPY --from=build /app/blog-service/target/*.jar app.jar
 
 EXPOSE 8084
 

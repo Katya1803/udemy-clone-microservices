@@ -12,11 +12,11 @@
 		<relativePath>../build-parent/pom.xml</relativePath>
 	</parent>
 
-	<artifactId>course-service</artifactId>
+	<artifactId>blog-service</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Course Service</name>
-	<description>Course Management Service</description>
+	<name>Blog Service</name>
+	<description>Blog Management Service</description>
 
 	<dependencies>
 		<!-- Common Module -->

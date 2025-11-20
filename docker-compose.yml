@@ -320,11 +320,11 @@ services:
       start_period: 90s
     restart: unless-stopped
 
-  course-service:
+  blog-service:
     build:
       context: .
-      dockerfile: course-service/Dockerfile
-    container_name: course-service
+      dockerfile: blog-service/Dockerfile
+    container_name: blog-service
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -336,7 +336,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - SERVER_PORT=8084
       - EUREKA_SERVER=http://eureka-server:8761/eureka/
-      - DB_URL=jdbc:postgresql://postgres:5432/course_db
+      - DB_URL=jdbc:postgresql://postgres:5432/blog_db
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - JWT_ISSUER=auth-service

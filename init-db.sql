@@ -13,6 +13,8 @@ $$;
 CREATE DATABASE auth_db;
 CREATE DATABASE user_db;
 CREATE DATABASE course_db;
+CREATE DATABASE blog_db;
+
 
 
 -- Tạo user nếu chưa có
@@ -29,4 +31,6 @@ $$;
 GRANT ALL PRIVILEGES ON DATABASE auth_db TO admin;
 GRANT ALL PRIVILEGES ON DATABASE user_db TO admin;
 GRANT ALL PRIVILEGES ON DATABASE course_db TO admin;
+GRANT ALL PRIVILEGES ON DATABASE blog_db TO admin;
+
 
