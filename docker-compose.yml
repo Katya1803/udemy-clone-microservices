@@ -331,10 +331,10 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "8084:8084"
+      - "8085:8085"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SERVER_PORT=8084
+      - SERVER_PORT=8085
       - EUREKA_SERVER=http://eureka-server:8761/eureka/
       - DB_URL=jdbc:postgresql://postgres:5432/blog_db
       - DB_USERNAME=${DB_USERNAME}

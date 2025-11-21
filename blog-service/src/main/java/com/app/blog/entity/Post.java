@@ -25,7 +25,7 @@ public class Post extends BaseEntity {
     @Column(nullable = false, unique = true, length = 200)
     private String slug;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Column(nullable = false)

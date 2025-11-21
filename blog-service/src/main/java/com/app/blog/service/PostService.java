@@ -238,6 +238,7 @@ public class PostService {
             series = new SeriesInfoDto(
                     post.getSeries().getId(),
                     post.getSeries().getTitle(),
+                    post.getSeries().getSlug(),
                     post.getOrderInSeries()
             );
         }
