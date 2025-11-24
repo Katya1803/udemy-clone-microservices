@@ -1,5 +1,7 @@
 package com.app.blog.service;
 
+import com.app.blog.client.UserDto;
+import com.app.blog.client.UserServiceClient;
 import com.app.blog.dto.post.*;
 import com.app.blog.entity.Post;
 import com.app.blog.entity.Series;
@@ -25,6 +27,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final SeriesRepository seriesRepository;
+    private final UserServiceClient userServiceClient;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -88,11 +91,23 @@ public class PostService {
     public PostDetailDto createPost(PostCreateRequest request, String authorId) {
         log.info("Creating post: {} by author: {}", request.title(), authorId);
 
+        // Fetch username from user-service
+        String authorName = authorId; // fallback
+        try {
+            UserDto user = userServiceClient.getUserByAccountId(authorId).getData();
+            if (user != null && user.getUsername() != null) {
+                authorName = user.getUsername();
+            }
+        } catch (Exception e) {
+            log.warn("Failed to fetch username for accountId: {}, using ID as fallback", authorId);
+        }
+
         Post post = new Post();
         post.setTitle(request.title());
         post.setSlug(request.slug());
         post.setContent(request.content());
         post.setAuthor(authorId);
+        post.setAuthorName(authorName);  // Save username here
         post.setStatus(Post.Status.DRAFT);
 
         if (request.seriesId() != null) {
@@ -106,7 +121,6 @@ public class PostService {
 
         return mapToDetailDto(post);
     }
-
     @Transactional
     public PostDetailDto updatePost(String postId, PostUpdateRequest request, String authorId) {
         log.info("Updating post: {} by author: {}", postId, authorId);
@@ -229,7 +243,7 @@ public class PostService {
     private PostDetailDto mapToDetailDto(Post post) {
         AuthorDto author = new AuthorDto(
                 post.getAuthor(),
-                post.getAuthor(),
+                post.getAuthorName() != null ? post.getAuthorName() : post.getAuthor(),
                 null
         );
 

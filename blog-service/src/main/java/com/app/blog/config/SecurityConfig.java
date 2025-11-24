@@ -4,6 +4,7 @@ import com.app.common.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,18 +29,13 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/blogs/**",
-                                "/posts/**",
-                                "/api/blogs/**",
-                                "/api/posts/**",
-                                "/blogs/health",
-                                "/actuator/**"
-                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/blogs/**", "/api/blogs/**").permitAll()
+                        .requestMatchers("/blogs/health", "/actuator/**").permitAll()
+
                         .anyRequest().authenticated()
-                ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 }

@@ -31,6 +31,9 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private String author;
 
+    @Column(name = "author_name", length = 100)
+    private String authorName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "series_id")
     private Series series;
@@ -44,5 +47,4 @@ public class Post extends BaseEntity {
     public enum Status {
         PUBLISHED, DRAFT, PENDING
     }
-
 }

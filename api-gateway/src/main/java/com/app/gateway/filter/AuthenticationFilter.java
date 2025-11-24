@@ -26,37 +26,45 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private final GatewayTokenBlacklist tokenBlacklistService;
 
     private static final List<String> PUBLIC_PATHS = List.of(
-            // auth-service
             "/auth/login",
             "/auth/register",
             "/auth/verify-otp",
             "/auth/resend-otp",
-            "/auth/refresh",
+            "/auth/refresh"
+    );
 
-            // blog-service
+    // Paths that are public for GET requests only
+    private static final List<String> PUBLIC_READ_PATHS = List.of(
             "/api/blogs/series",
             "/api/blogs/posts",
             "/api/blogs/posts/slug"
     );
 
-
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getPath().value();
+        String method = request.getMethod().name();
 
-        if (request.getMethod().name().equalsIgnoreCase("OPTIONS")) {
+        if (method.equalsIgnoreCase("OPTIONS")) {
             return chain.filter(exchange);
         }
 
-        log.debug("Processing request: {} {}", request.getMethod(), path);
+        log.debug("Processing request: {} {}", method, path);
 
+        // Check if path is always public (any method)
         if (isPublicPath(path)) {
             log.debug("Public path accessed, skipping authentication: {}", path);
             return chain.filter(exchange);
         }
 
-        log.debug("Protected path, authentication required: {}", path);
+        // Check if path is public for GET requests only
+        if (isPublicReadPath(path) && method.equalsIgnoreCase("GET")) {
+            log.debug("Public read path accessed with GET, skipping authentication: {}", path);
+            return chain.filter(exchange);
+        }
+
+        log.debug("Protected path, authentication required: {} {}", method, path);
 
         String token = extractToken(request);
 
@@ -108,7 +116,6 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         }
     }
 
-
     private String extractToken(ServerHttpRequest request) {
         String bearerToken = request.getHeaders().getFirst(GatewayConstants.JWT_HEADER);
 
@@ -119,11 +126,13 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         return null;
     }
 
-
     private boolean isPublicPath(String path) {
         return PUBLIC_PATHS.stream().anyMatch(path::startsWith);
     }
 
+    private boolean isPublicReadPath(String path) {
+        return PUBLIC_READ_PATHS.stream().anyMatch(path::startsWith);
+    }
 
     private Mono<Void> onError(ServerWebExchange exchange, String message, HttpStatus status) {
         exchange.getResponse().setStatusCode(status);

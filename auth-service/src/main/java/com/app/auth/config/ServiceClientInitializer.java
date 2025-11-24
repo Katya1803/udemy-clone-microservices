@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
@@ -23,7 +22,7 @@ public class ServiceClientInitializer {
         return args -> {
             log.info("Initializing service clients...");
 
-            // Auth Service Client (for calling email-service)
+            // Auth Service Client
             if (!serviceClientRepository.existsByClientId("auth-service")) {
                 ServiceClient authServiceClient = ServiceClient.builder()
                         .clientId("auth-service")
@@ -31,27 +30,25 @@ public class ServiceClientInitializer {
                         .allowedScopes("email:send,user:create")
                         .enabled(true)
                         .build();
-
                 serviceClientRepository.save(authServiceClient);
                 log.info("✅ Created service client: auth-service");
             } else {
                 log.info("✓ Service client 'auth-service' already exists");
             }
 
-            // Example: User Service Client
-            /*
-            if (!serviceClientRepository.existsByClientId("user-service")) {
-                ServiceClient userServiceClient = ServiceClient.builder()
-                        .clientId("user-service")
-                        .clientSecret(passwordEncoder.encode("user-service-secret"))
-                        .allowedScopes("auth:validate,email:send")
+            // Blog Service Client - ADD THIS
+            if (!serviceClientRepository.existsByClientId("blog-service")) {
+                ServiceClient blogServiceClient = ServiceClient.builder()
+                        .clientId("blog-service")
+                        .clientSecret(passwordEncoder.encode("blog-service-secret"))
+                        .allowedScopes("user:read")
                         .enabled(true)
                         .build();
-
-                serviceClientRepository.save(userServiceClient);
-                log.info("✅ Created service client: user-service");
+                serviceClientRepository.save(blogServiceClient);
+                log.info("✅ Created service client: blog-service");
+            } else {
+                log.info("✓ Service client 'blog-service' already exists");
             }
-            */
 
             log.info("Service clients initialization completed");
         };

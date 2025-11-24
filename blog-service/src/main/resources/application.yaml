@@ -111,3 +111,21 @@ resilience4j:
       courseOperations:
         max-concurrent-calls: 25
         max-wait-duration: 1000ms
+
+oauth2:
+  client:
+    client-id: blog-service
+    client-secret: blog-service-secret
+    auth-service-url: ${OAUTH2_CLIENT_AUTH_SERVICE_URL}
+    token-endpoint: /oauth/token
+    grant-type: client_credentials
+    scope: user:read
+
+# Feign Configuration
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
