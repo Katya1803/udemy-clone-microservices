@@ -43,7 +43,8 @@ public class PostService {
                 post.getSlug(),
                 extractExcerpt(post.getContent()),
                 formatInstant(post.getCreatedAt()),
-                post.getAuthor()
+                post.getAuthor(),
+                post.getStatus().toString()
         ));
     }
 
@@ -59,7 +60,8 @@ public class PostService {
                 post.getSlug(),
                 extractExcerpt(post.getContent()),
                 formatInstant(post.getCreatedAt()),
-                post.getAuthor()
+                post.getAuthor(),
+                post.getStatus().toString()
         ));
     }
 
@@ -236,7 +238,8 @@ public class PostService {
                 post.getSlug(),
                 extractExcerpt(post.getContent()),
                 formatInstant(post.getCreatedAt()),
-                post.getAuthor()
+                post.getAuthor(),
+                post.getStatus().toString()
         ));
     }
 

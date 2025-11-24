@@ -59,6 +59,21 @@ public class UserController {
     }
 
     /**
+     * Get user by accountId (service-to-service)
+     * Used by blog-service to fetch username when creating posts
+     */
+    @GetMapping("/account/{accountId}")
+    public ResponseEntity<ApiResponse<UserResponse>> getUserByAccountId(
+            @PathVariable String accountId) {
+
+        log.debug("Fetching user by accountId: {}", accountId);
+
+        UserResponse response = userService.getUserByAccountId(accountId);
+
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    /**
      * Get user by userId (internal ID)
      */
     @GetMapping("/{userId}")

@@ -6,5 +6,6 @@ public record PostListItemDto(
         String slug,
         String excerpt,
         String createdAt,
-        String authorName
+        String authorName,
+        String status
 ) {}
