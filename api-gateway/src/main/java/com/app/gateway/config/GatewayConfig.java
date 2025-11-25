@@ -15,6 +15,7 @@ public class GatewayConfig {
         log.info("Configuring Gateway routes");
 
         return builder.routes()
+                // Auth Service - No prefix stripping
                 .route("auth-service", r -> r
                         .path("/auth/**")
                         .filters(f -> f
@@ -28,6 +29,7 @@ public class GatewayConfig {
                         .uri("lb://auth-service")
                 )
 
+                // User Service - Strip /api prefix
                 .route("user-service", r -> r
                         .path("/api/users/**")
                         .filters(f -> f
@@ -37,6 +39,7 @@ public class GatewayConfig {
                         .uri("lb://user-service")
                 )
 
+                // Blog Service - Strip /api prefix
                 .route("blog-service", r -> r
                         .path("/api/blogs/**")
                         .filters(f -> f
@@ -46,14 +49,14 @@ public class GatewayConfig {
                         .uri("lb://blog-service")
                 )
 
-                // Example service
-                .route("test-service", r -> r
-                        .path("/api/test/**")
+                // Course Service - Strip /api prefix
+                .route("course-service", r -> r
+                        .path("/api/courses/**", "/api/enrollments/**")
                         .filters(f -> f
                                 .stripPrefix(1)
                                 .retry(config -> config.setRetries(2))
                         )
-                        .uri("lb://test-service")
+                        .uri("lb://course-service")
                 )
 
                 .build();

@@ -37,7 +37,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private static final List<String> PUBLIC_READ_PATHS = List.of(
             "/api/blogs/series",
             "/api/blogs/posts",
-            "/api/blogs/posts/slug"
+            "/api/blogs/posts/slug",
+            "/api/courses"
     );
 
     @Override
