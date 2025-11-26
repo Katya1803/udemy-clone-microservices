@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT:8084}
+  port: ${SERVER_PORT:8085}
   servlet:
     context-path: /
   error:
@@ -53,7 +53,7 @@ jwt:
 logging:
   level:
     root: ${LOG_LEVEL_ROOT:INFO}
-    com.app.course: ${LOG_LEVEL_COURSE:DEBUG}
+    com.app.blog: ${LOG_LEVEL_BLOG:DEBUG}
     org.springframework.security: ${LOG_LEVEL_SECURITY:INFO}
     org.hibernate.SQL: ${LOG_LEVEL_SQL:DEBUG}
 
@@ -108,7 +108,7 @@ resilience4j:
         max-concurrent-calls: 10
         max-wait-duration: 500ms
     instances:
-      courseOperations:
+      blogOperations:
         max-concurrent-calls: 25
         max-wait-duration: 1000ms
 
