@@ -39,6 +39,8 @@ public class SecurityConfig {
                                 "/auth/refresh",
                                 "/auth/health",
                                 "/oauth/token",
+                                "/auth/google",
+                                "/auth/google/callback",
                                 "/oauth/health",
                                 "/actuator/**",
                                 "/h2-console/**"

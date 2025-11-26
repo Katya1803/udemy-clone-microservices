@@ -30,7 +30,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/auth/register",
             "/auth/verify-otp",
             "/auth/resend-otp",
-            "/auth/refresh"
+            "/auth/refresh",
+            "/auth/google/callback"
     );
 
     // Paths that are public for GET requests only
