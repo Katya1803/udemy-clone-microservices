@@ -29,18 +29,6 @@ public class PostController {
 
     private final PostService postService;
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<PostListItemDto>>> getPublishedPosts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<PostListItemDto> posts = postService.getPublishedPosts(pageable);
-        PageResponse<PostListItemDto> response = PageResponse.of(posts);
-
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
-
     @GetMapping("/my-posts")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<PageResponse<PostListItemDto>>> getMyPosts(
@@ -157,5 +145,25 @@ public class PostController {
         PostDetailDto response = postService.rejectPost(postId, adminId);
 
         return ResponseEntity.ok(ApiResponse.success(response, "Post rejected"));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<PageResponse<PostListItemDto>>> getPublishedPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        // ADD đoạn này
+        Page<PostListItemDto> posts;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            posts = postService.searchPublishedPosts(keyword.trim(), pageable);
+        } else {
+            posts = postService.getPublishedPosts(pageable);
+        }
+
+        PageResponse<PostListItemDto> response = PageResponse.of(posts);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

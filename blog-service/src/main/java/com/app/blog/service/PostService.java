@@ -244,6 +244,27 @@ public class PostService {
         ));
     }
 
+    @Transactional(readOnly = true)
+    public Page<PostListItemDto> searchPublishedPosts(String keyword, Pageable pageable) {
+        log.debug("Searching published posts with keyword: {}", keyword);
+
+        Page<Post> posts = postRepository.searchByStatusAndKeyword(
+                Post.Status.PUBLISHED,
+                keyword,
+                pageable
+        );
+
+        return posts.map(post -> new PostListItemDto(
+                post.getId(),
+                post.getTitle(),
+                post.getSlug(),
+                extractExcerpt(post.getContent()),
+                formatInstant(post.getCreatedAt()),
+                post.getAuthor(),
+                post.getStatus().toString()
+        ));
+    }
+
     private PostDetailDto mapToDetailDto(Post post) {
         AuthorDto author = new AuthorDto(
                 post.getAuthor(),
