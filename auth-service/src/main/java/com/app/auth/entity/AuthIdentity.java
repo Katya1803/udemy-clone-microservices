@@ -3,10 +3,9 @@ package com.app.auth.entity;
 import com.app.auth.constant.Provider;
 import com.app.common.util.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(
         name = "auth_identities",
@@ -14,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class AuthIdentity extends BaseEntity {
 
     @Id
