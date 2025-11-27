@@ -39,6 +39,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/api/blogs/series",
             "/api/blogs/posts",
             "/api/blogs/posts/slug",
+            "/api/blogs/ebooks",
             "/api/courses"
     );
 
