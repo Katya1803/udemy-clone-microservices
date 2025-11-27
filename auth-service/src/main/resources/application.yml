@@ -75,8 +75,8 @@ oauth2:
     client-id: ${OAUTH2_CLIENT_ID:auth-service}
     client-secret: ${OAUTH2_CLIENT_SECRET:auth-service-secret}
   google:
-    client-id: ${OAUTH2_GOOGLE_CLIENT_ID:218819989351-vd0qstuj4v33n7oauto62bloq38cp07k.apps.googleusercontent.com}
-    client-secret: ${OAUTH2_GOOGLE_CLIENT_SECRET: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}
+    client-id: ${OAUTH2_GOOGLE_CLIENT_ID}
+    client-secret: ${OAUTH2_GOOGLE_CLIENT_SECRET}
     redirect-uri: ${OAUTH2_GOOGLE_REDIRECT_URI:http://localhost:3000/auth/google/callback}
 # Logging
 logging:
