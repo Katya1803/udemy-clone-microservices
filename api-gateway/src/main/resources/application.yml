@@ -28,6 +28,8 @@ spring:
             allowed-origins:
               - "${CORS_ALLOWED_ORIGIN:http://localhost:3000}"
               - "http://localhost:4200"
+              - "https://app.nulpointer.blog"
+              - "https://api.nulpointer.blog"
             allowed-methods:
               - GET
               - POST

@@ -25,6 +25,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
@@ -114,6 +115,10 @@ public class GoogleOAuthServiceImpl implements GoogleOAuthService {
 
     private String exchangeCodeForToken(String code) {
         try {
+            log.info("Exchanging code for token...");
+            log.info("Client ID: {}", clientId);
+            log.info("Redirect URI: {}", redirectUri);
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
@@ -139,6 +144,11 @@ public class GoogleOAuthServiceImpl implements GoogleOAuthService {
             }
 
             return (String) body.get("access_token");
+        } catch (HttpClientErrorException e) {
+            // Log chi tiết response từ Google
+            log.error("Google OAuth error - Status: {}, Body: {}",
+                    e.getStatusCode(), e.getResponseBodyAsString());
+            throw new UnauthorizedException("Failed to authenticate with Google");
         } catch (Exception e) {
             log.error("Error exchanging code for token: {}", e.getMessage(), e);
             throw new UnauthorizedException("Failed to authenticate with Google");
